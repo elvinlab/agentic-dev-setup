@@ -1,59 +1,138 @@
-# agentic-dev-setup
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="assets/banner-light.svg">
+  <img alt="agentic-dev-setup: Claude Code delegates through herdr to OpenCode, routed by OmniRoute to free cloud providers and a local qwen3:14b model, with Engram as shared memory" src="assets/banner-dark.svg" width="100%">
+</picture>
 
-> A multi-agent development environment where Claude Code does the thinking and cheaper models do the typing.
+<div align="center">
 
-## Why
+![Claude Code](https://img.shields.io/badge/Claude_Code-brain-d97757?style=for-the-badge&logo=claude&logoColor=white) ![OpenCode](https://img.shields.io/badge/OpenCode-agents-0d1117?style=for-the-badge) ![Ollama](https://img.shields.io/badge/Ollama-qwen3:14b-ec4899?style=for-the-badge&logo=ollama&logoColor=white) ![Omarchy](https://img.shields.io/badge/Omarchy-Arch_+_Hyprland-1793d1?style=for-the-badge&logo=archlinux&logoColor=white)
 
-Frontier models are excellent at architecture, debugging and ambiguous problems — and wasteful for renames, boilerplate and commit messages. This setup routes each task to the cheapest model that can do it well:
+</div>
 
-- **Claude Code** is the brain. It handles complex work and decides what to delegate.
-- **herdr** lets Claude spawn and supervise **OpenCode** agents (with **Gentle AI**) in terminal panes.
-- **OmniRoute** exposes priority "combos" over free-tier providers (NVIDIA NIM, Mistral, Gemini, Groq), with local **Ollama** as the last fallback.
-- **Engram** gives every agent the same persistent memory.
+This is the environment I code in every day — and honestly, the thing I am proudest of building.
 
-Claude reviews every delegated diff, so cheaper models never ship unreviewed code.
+**Claude Code** does the thinking. Whenever a task is trivial or well-scoped, it hands it off through **herdr** to **OpenCode** agents. Those agents talk to **OmniRoute**, which routes every request through free-tier cloud models and falls back to **qwen3:14b running on my own GPU**. **Engram** gives all of them the same memory, and Claude reviews every diff before it counts.
 
-## Architecture
+The result: frontier-level judgment where it matters, **$0 for the delegated work**, and a pipeline that keeps working even when every cloud quota runs out.
+
+## ✨ Highlights
+
+- 🧠 **One brain, many hands** — Claude keeps architecture, debugging and security; cheaper models handle renames, tests and boilerplate.
+- 🔀 **Three routing combos, five providers** — each combo degrades gracefully from the best free model down to local AI.
+- 🖥 **Local AI that fits** — `qwen3:14b` tuned to run 100% on a 12 GB RTX 3060 with a 16k context.
+- 🧬 **Shared memory** — Engram persists decisions and conventions across every agent and session.
+- 🔐 **Secrets never touch git** — environment variables plus an `age`-encrypted backup; the gateway only listens on localhost.
+- ♻️ **Rebuildable from scratch** — bootstrap, restore and idempotent patch scripts bring a fresh machine back to this exact state.
+
+## 🏗 How it fits together
 
 ```mermaid
 flowchart LR
-    U([Developer]) --> C[Claude Code<br/>Tier 3 · complex work]
+    U([Me]) --> C[Claude Code<br/>Tier 3 · complex work]
     C -- "delegates via herdr" --> O[OpenCode + Gentle AI<br/>Tier 1 / Tier 2]
     O --> R{{OmniRoute<br/>localhost:20128}}
     R --> N[NVIDIA NIM]
     R --> M[Mistral]
     R --> G[Gemini]
     R --> Q[Groq]
-    R --> L[(Ollama · qwen3:14b<br/>local fallback)]
+    R --> L[(Ollama · qwen3:14b<br/>RTX 3060 · local)]
     C <--> E[(Engram<br/>shared memory)]
     O <--> E
-    C -. "reviews diff" .-> O
+    C -. "reviews every diff" .-> O
 ```
 
-## Delegation tiers
+## 🧰 The stack
+
+| Layer | Tool | What it does here |
+|-------|------|-------------------|
+| Brain | [Claude Code](https://claude.com/claude-code) | Plans, decides what to delegate, writes the hard parts, reviews everything |
+| Orchestration | [herdr](https://github.com/herdrdev/herdr) | Lets Claude spawn and supervise agents in terminal panes |
+| Agents | [OpenCode](https://opencode.ai) + [Gentle AI](https://github.com/Gentleman-Programming/gentle-ai) | Executes delegated tasks with the same conventions and skills |
+| Gateway | [OmniRoute](https://www.npmjs.com/package/omniroute) | OpenAI-compatible proxy with priority combos, param filters and prompt compression |
+| Cloud models | NVIDIA NIM · Mistral · Gemini · Groq | Free tiers only, official API keys, billing never enabled |
+| Local model | [Ollama](https://ollama.com) + `qwen3:14b` | Private, offline, always-available last fallback |
+| Memory | [Engram](https://github.com/Gentleman-Programming/engram) | Persistent memory shared by every agent |
+
+## 🔀 Routing combos
+
+Every combo uses a **priority** strategy: the first healthy provider answers, the rest are fallbacks.
+
+| Combo | Used for | Route |
+|-------|----------|-------|
+| `elvinlabFast` | Tier 1 · trivial | Groq `gpt-oss-120b` → Groq `gpt-oss-20b` → NVIDIA `nemotron-3.5-lightning` → **local `qwen3:14b`** |
+| `elvinlabCode` | Tier 2 · bounded | NVIDIA `nemotron-3-ultra` → Mistral `codestral` → Gemini `3-flash` → **local `qwen3:14b`** |
+| `elvinlabLocal` | Offline / private | **local `qwen3:14b`** only |
+
+Switching the whole delegation between cloud and local is one command: `agent-profile cloud` or `agent-profile local`. Full provider setup lives in [`docs/OMNIROUTE.md`](docs/OMNIROUTE.md).
+
+### Delegation tiers
 
 | Tier | Model | Typical work |
 |---|---|---|
-| 1 · Trivial | `TIER1_MODEL` (fast combo) | Renames, lint fixes, i18n strings, commit messages, mechanical 1–2 file edits |
-| 2 · Bounded | `TIER2_MODEL` (code combo) | Tests, boilerplate, docs, simple components, refactors with a clear spec |
+| 1 · Trivial | `TIER1_MODEL` → `elvinlabFast` | Renames, lint fixes, i18n strings, commit messages, mechanical 1–2 file edits |
+| 2 · Bounded | `TIER2_MODEL` → `elvinlabCode` | Tests, boilerplate, docs, simple components, refactors with a clear spec |
 | 3 · Complex | Claude Code itself | Architecture, design decisions, hard debugging, security-sensitive code, ambiguous requirements |
 
-Models are never hardcoded: Claude reads `~/.config/agent-routing/active.env` before each delegation, and `agent-profile cloud|local` switches the whole routing in one command. The full rules live in [`home/.claude/delegation-block.md`](home/.claude/delegation-block.md).
+Models are never hardcoded: Claude reads `~/.config/agent-routing/active.env` before every delegation. The complete rules live in [`home/.claude/delegation-block.md`](home/.claude/delegation-block.md).
 
-## Key design decisions
+## 🖥 Local AI: qwen3:14b on an RTX 3060
 
-- **Secrets never touch git.** Keys are read from environment variables (`{env:OMNIROUTE_API_KEY}`). Provider keys, databases and memory are backed up separately in an [`age`](https://github.com/FiloSottile/age)-encrypted archive.
+A 14B model on a 12 GB consumer GPU only works if every byte of VRAM counts. The Ollama service is tuned with a [systemd override](system/etc/systemd/system/ollama.service.d/override.conf):
+
+| Setting | Value | Why |
+|---------|-------|-----|
+| `OLLAMA_FLASH_ATTENTION` | `1` | Faster attention with less memory |
+| `OLLAMA_KV_CACHE_TYPE` | `q8_0` | Halves the KV cache so the 16k context fits in VRAM |
+| `OLLAMA_CONTEXT_LENGTH` | `16384` | Enough context for real coding tasks |
+| `OLLAMA_NUM_PARALLEL` | `1` | One request at a time, no VRAM splitting |
+| `OLLAMA_MAX_LOADED_MODELS` | `1` | Never two models competing for the GPU |
+| `OLLAMA_KEEP_ALIVE` | `30m` | Stays warm during a session, frees the GPU afterwards |
+
+The service is **on demand**: it never starts at boot. `ollama-up` and `ollama-down` start and stop it, so the GPU stays free when I am not coding.
+
+## ⌨️ My workstation
+
+| | |
+|---|---|
+| **OS** | [Omarchy](https://omarchy.org) 4 — Arch Linux + Hyprland |
+| **Terminal** | foot · bash · tmux |
+| **Editor** | Neovim + LazyVim |
+| **CPU** | AMD Ryzen 5 5600X |
+| **GPU** | NVIDIA GeForce RTX 3060 · 12 GB |
+
+<details>
+<summary><b>Versions this setup was tested with (September 2026)</b></summary>
+
+| Tool | Version |
+|------|---------|
+| Omarchy | 4.0.4 |
+| Hyprland | 0.56.2 |
+| Neovim | 0.12.5 |
+| Claude Code | 2.1.282 |
+| OpenCode | 1.18.32 |
+| herdr | 0.9.1 |
+| Gentle AI | 3.7.0 |
+| Engram | 2.2.0 |
+| OmniRoute | 3.8.50 |
+| Ollama | 0.33.3 |
+
+</details>
+
+## 🛡 Design decisions
+
+- **Secrets never touch git.** Keys are read from environment variables (`{env:OMNIROUTE_API_KEY}`). Provider keys, databases and memory are backed up in an [`age`](https://github.com/FiloSottile/age)-encrypted archive.
 - **Localhost only.** OmniRoute binds to `127.0.0.1` and requires an API key; the OpenCode key has no management access. No tunnels.
-- **Priority combos with fallbacks.** Each combo tries the best free provider first and degrades gracefully down to local Ollama when quotas run out.
-- **Ollama on demand.** The service does not start at boot. It is tuned for 16k context, flash attention and a q8 KV cache so a 14B model fits fully in VRAM.
-- **Idempotent patches.** `apply-patches.sh` deep-merges the OmniRoute provider into OpenCode and injects a marked delegation block into `CLAUDE.md` — safe to rerun after every Gentle AI update without overwriting its configuration.
-- **Everything is documented.** Real problems and their fixes are captured in [`docs/LESSONS.md`](docs/LESSONS.md).
+- **Graceful degradation.** Quotas run out; the pipeline does not. Every combo ends on local AI.
+- **Idempotent patches.** `apply-patches.sh` deep-merges the OmniRoute provider into OpenCode and injects a marked block into `CLAUDE.md` — safe to rerun after every Gentle AI update.
+- **Humans stay in charge.** Cheaper models never ship unreviewed code; free models sometimes invent facts, so Claude verifies every claim.
+- **Lessons are written down.** Every problem solved along the way is in [`docs/LESSONS.md`](docs/LESSONS.md).
 
-## Repository layout
+## 📁 Repository layout
 
 ```
 agentic-dev-setup/
-├── README.md
+├── assets/                        ← README banner
 ├── docs/
 │   ├── SETUP.md                   ← backup, rebuild and verification guide
 │   ├── OMNIROUTE.md               ← providers, combos, filters, compression
@@ -69,12 +148,13 @@ agentic-dev-setup/
 │   └── .config/agent-routing/     ← cloud / local model profiles (.example)
 ├── omniroute/env.additions.example
 ├── patches/opencode-provider.json
-└── system/etc/systemd/system/ollama.service.d/override.conf
+├── system/etc/systemd/system/ollama.service.d/override.conf
+└── tools/                         ← banner generator
 ```
 
-## Quick start
+## 🚀 Quick start
 
-Built for [Omarchy](https://omarchy.org) (Arch Linux), but the pieces are portable.
+Built for Omarchy, but every piece is portable to any Linux with an NVIDIA GPU.
 
 ```bash
 git clone https://github.com/elvinlab/agentic-dev-setup.git
@@ -85,8 +165,6 @@ chmod +x scripts/*.sh
 
 Then follow [`docs/SETUP.md`](docs/SETUP.md) to restore data, install Gentle AI and apply the patches.
 
-## Verification
-
 ```bash
 ss -tlnp | grep 20128                        # → 127.0.0.1:20128
 curl -s http://localhost:20128/v1/models     # → Authentication required
@@ -94,8 +172,12 @@ opencode models omniroute                    # → elvinlabCode, elvinlabFast, e
 agent-profile                                # → Active: cloud
 ```
 
-See [`docs/SETUP.md`](docs/SETUP.md#verification) for the full checklist.
+The full checklist is in [`docs/SETUP.md`](docs/SETUP.md#verification).
 
-## License
+---
 
-[MIT](LICENSE)
+<div align="center">
+
+Built with care by [Elvin González](https://github.com/elvinlab) · [elvinlab.dev](https://elvinlab.dev) · [MIT License](LICENSE)
+
+</div>

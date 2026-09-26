@@ -4,3 +4,6 @@
 secrets/
 *.sqlite
 *.db
+tools/.venv/
+tools/fonts/
+__pycache__/
