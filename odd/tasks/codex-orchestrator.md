@@ -17,9 +17,9 @@ The setup currently documents Claude Code as its only top-level orchestrator. Co
 
 ## Workflow Evidence
 - Feature branch: `feat/codex-orchestrator` (branched from `main` at `3c8aa85f319b49a6325a7bc5616aee3f33dfd435`).
-- Route: delegated direct; mapping trigger fired because exploration spans 4+ files, and writer trigger fired because implementation changes multiple non-trivial files. A read-only mapping worker and primary-source compatibility research worker have already reported findings. One bounded writer will implement the repository change after reading this document.
+- Route: delegated direct; mapping trigger fired because exploration spans 4+ files, and writer trigger fired because implementation changes multiple non-trivial files. Read-only mapping and primary-source compatibility research workers reported findings; the COD-1 writer read this document before editing.
 - TDD: off for this dotfile task, per user clarification. Ordinary checks: shell syntax, TOML parsing, installer idempotence/preservation, and Codex profile parsing where feasible.
-- RDD: global mode is on. Initial empty-candidate assessment was unassessable; `.atl/` and `.codegraph/` are user-created untracked paths and remain outside this feature. An interim workspace assessment with only intended files selected returned high risk (`shell_process` in the installer/shell integration), so review is due. Subsequent COD-1 edits changed the candidate; repeat assessment against its final snapshot. Native status/preflight failed once in the sandbox (`.git` read-only) and, after escalation, requested explicit intended-untracked selection. Do not infer low risk or bypass any gate. User approved the branch switch and review assessment/status commands; no review actor or commit has run yet.
+- RDD: global mode is on. Initial empty-candidate assessment was unassessable; `.atl/` and `.codegraph/` are user-created untracked paths and remain outside this feature. Final committed-only assessment returned high risk (`shell_process` in the installer/shell integration), so review is due. The post-commit STATUS preflight is resolved with the current inventory explicitly excluded and returned a fresh `review.start` transition using `--consent=relay`. Do not start that transition without the user's grant. User approved the branch switch, review assessment/status commands, and COD-1 commit; no review actor has run yet.
 - Delivery strategy: `ask-on-risk` (default). Forecast approximately 380 authored changed lines across two work units, including task tracking; monitor actual committed totals.
 
 ## Tasks
@@ -31,8 +31,8 @@ The setup currently documents Claude Code as its only top-level orchestrator. Co
 - **Acceptance:** profile files are valid; installer preserves unrelated configuration and is idempotent; cloud selects `elvinlabCode` and local selects `elvinlabLocal`; no secrets are embedded or copied.
 - **Checks:** PASS — `bash -n home/.bashrc.d/ai.sh home/.bashrc.d/codex.sh scripts/install-codex-profiles.sh scripts/apply-patches.sh tests/test-codex-profiles.sh`; `bash tests/test-codex-profiles.sh` (TOML assertions, profile/helper idempotence, preservation of base config/auth/unrelated profile, rejection of conflicting files/symlinks); Codex CLI accepted both `--profile ... --help` in isolated CODEX_HOME; `git diff --check`; confirmed `apply-patches.sh` invokes installer. Temporary CODEX_HOME caused expected PATH-helper warnings; commands exited successfully. Live request is pending because OmniRoute/Ollama were not listening at inspection time.
 - **Route:** delegated direct. Trigger evidence: multiple non-trivial config/script files and preparation across the existing setup flow.
-- **Commit/evidence:** pending.
-- **RDD evidence:** interim workspace assessment high (`shell_process`), review due; re-assess final COD-1 snapshot and then committed-only outcome pending.
+- **Commit/evidence:** `7e3645e` — `feat(codex): add OmniRoute peer profiles` (200 authored lines).
+- **RDD evidence:** committed-only assessment against `3c8aa85` returned high (`shell_process` in `scripts/apply-patches.sh` and `home/.bashrc.d/codex.sh`), `review_due=true`, `review_due_reason=high_risk`. The prescribed preflight STATUS now returns a fresh `review.start` using the `exclude` scope for the unrelated untracked files. Candidate reviewer consent is pending; do not start review without the user's grant.
 
 ### COD-2 — Document Codex peer orchestration and recovery
 - [ ] Add Codex orchestration instructions and update README, setup, OmniRoute, backup, and restore guidance to include Codex without implying it is Claude-delegated.
@@ -43,11 +43,24 @@ The setup currently documents Claude Code as its only top-level orchestrator. Co
 - **Commit/evidence:** pending.
 - **RDD evidence:** pending.
 
+### COD-3 — Give Codex Claude's tier delegation (peer parity)
+- [x] Add a Codex-flavored delegation block that mirrors `home/.claude/delegation-block.md`: same `~/.config/agent-routing/active.env` source, same Tier 1/2/3 table, same herdr → `opencode -m <model>` mechanism, Tier 3 = Codex itself. → `home/.codex/delegation-block.md`.
+- [x] Add a precedence rule reconciling Codex's ODD mandatory triggers in `AGENTS.md` (delegate at 2+ files for context hygiene) with the cost-tier "do it yourself when cheaper" rule. → "Precedence with the ODD delegation triggers" section in the block.
+- [x] Wire `scripts/apply-patches.sh` to inject the block idempotently into `~/.codex/AGENTS.md` under `elvinlab:delegation-codex` markers, outside gentle-ai managed regions. → section 3 in `apply-patches.sh`; deployed to this workstation (1 block, gentle-ai regions intact).
+- [x] Extend the test to cover AGENTS.md injection idempotence and preservation of gentle-ai managed regions. → `tests/test-codex-delegation.sh`.
+- **Decision:** approach (a) — reuse Claude's exact mechanism (herdr + OpenCode + one shared `active.env`) so `agent-profile cloud/local` switches both orchestrators. Native multi-agent per-role profiles (approach b) deferred until a live test confirms per-agent model/provider works on this fork.
+- **Acceptance:** Codex reads `active.env` and delegates trivial→TIER1_MODEL, bounded→TIER2_MODEL via herdr/OpenCode; the block survives gentle-ai regeneration when `apply-patches.sh` is rerun; gentle-ai managed regions in AGENTS.md stay intact.
+- **Checks:** PASS — `bash -n scripts/apply-patches.sh tests/test-codex-delegation.sh`; `bash tests/test-codex-delegation.sh` (1 block injected, gentle-ai regions + user content preserved, idempotent on re-run, missing AGENTS.md tolerated); `bash tests/test-codex-profiles.sh` still passes (COD-1 intact); `git diff --check` clean. PENDING: live delegation smoke (Codex actually spawning herdr/`opencode -m`) not yet exercised — same open item class as COD-1 live inference; unknowns #4/#5 (sandbox/approval prompts for herdr/opencode) unverified.
+- **Route:** inline writer. Trigger evidence: 1 non-trivial authored artifact (delegation block) plus mechanical script/test/doc edits.
+- **RDD evidence:** pending — assess committed-only after the COD-3 commit.
+- **Verified context:** `~/.codex/config.toml` has `multi_agent=true`, herdr SessionStart hook already runs, Engram via MCP, `herdr`+`opencode` on PATH. AGENTS.md uses gentle-ai marker regions (agent-routing 76–161, codegraph 163–192); injecting outside them is safe and idempotent.
+
 ## Progress and Next Step
 - Exploration and upstream compatibility research completed. Existing Codex is `0.158.0`; OmniRoute is `3.8.50`; the current Codex config already enables native multi-agent support and is user-managed.
 - Engram mirror was updated after COD-1 and read back in full; continue syncing after each task.
 - COD-1 implementation and focused checks are complete. Escalated installer added `~/.codex/elvinlab-cloud.config.toml`, `~/.codex/elvinlab-local.config.toml`, and `~/.bashrc.d/codex.sh`, refusing conflicts and leaving the user's base config/auth in place by design. Both profiles use the existing OmniRoute aliases; no live inference was tested.
-- Next: assess the final COD-1 workspace candidate through native RDD, obtain any required review consent after commit, and close COD-1 with a Conventional Commit. Then delegate COD-2 and keep this file and Engram mirror synchronized.
+- COD-1 source work is committed as `7e3645e`; profiles and launcher helper were installed on this workstation. Its native review gate is high-risk; STATUS is ready to start the review after the user's consent.
+- Next: ask for consent to execute the returned native `review.start` command for COD-1. If review is declined, continue under ordinary repository policy. Then delegate COD-2 and keep this file and Engram mirror synchronized.
 
 ## Relevant Files
 - `home/.bashrc.d/codex.sh` — separate `codex-cloud` and `codex-local` launch helpers.

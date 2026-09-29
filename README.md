@@ -14,11 +14,14 @@ This is the environment I code in every day — and honestly, the thing I am pro
 
 **Claude Code** does the thinking. Whenever a task is trivial or well-scoped, it hands it off through **herdr** to **OpenCode** agents. Those agents talk to **OmniRoute**, which routes every request through free-tier cloud models and falls back to **qwen3:14b running on my own GPU**. **Engram** gives all of them the same memory, and Claude reviews every diff before it counts.
 
+When Claude Code is unavailable, **Codex** steps in as a second, independent orchestrator — same OmniRoute combos, same shared memory, one command away. It is a *peer*, not a delegated agent.
+
 The result: frontier-level judgment where it matters, **$0 for the delegated work**, and a pipeline that keeps working even when every cloud quota runs out.
 
 ## ✨ Highlights
 
 - 🧠 **One brain, many hands** — Claude keeps architecture, debugging and security; cheaper models handle renames, tests and boilerplate.
+- 🤝 **A backup brain** — Codex runs the same pipeline as an independent peer when Claude Code is down, with `codex-cloud` / `codex-local`.
 - 🔀 **Three routing combos, five providers** — each combo degrades gracefully from the best free model down to local AI.
 - 🖥 **Local AI that fits** — `qwen3:14b` tuned to run 100% on a 12 GB RTX 3060 with a 16k context.
 - 🧬 **Shared memory** — Engram persists decisions and conventions across every agent and session.
@@ -30,7 +33,10 @@ The result: frontier-level judgment where it matters, **$0 for the delegated wor
 ```mermaid
 flowchart LR
     U([Me]) --> C[Claude Code<br/>Tier 3 · complex work]
+    U -. "when Claude is unavailable" .-> X[Codex<br/>peer orchestrator]
     C -- "delegates via herdr" --> O[OpenCode + Gentle AI<br/>Tier 1 / Tier 2]
+    X -- "delegates via herdr" --> O
+    X -- "codex-cloud / codex-local" --> R
     O --> R{{OmniRoute<br/>localhost:20128}}
     R --> N[NVIDIA NIM]
     R --> M[Mistral]
@@ -39,6 +45,7 @@ flowchart LR
     R --> L[(Ollama · qwen3:14b<br/>RTX 3060 · local)]
     C <--> E[(Engram<br/>shared memory)]
     O <--> E
+    X <--> E
     C -. "reviews every diff" .-> O
 ```
 
@@ -47,6 +54,7 @@ flowchart LR
 | Layer | Tool | What it does here |
 |-------|------|-------------------|
 | Brain | [Claude Code](https://claude.com/claude-code) | Plans, decides what to delegate, writes the hard parts, reviews everything |
+| Peer brain | [Codex](https://github.com/openai/codex) | Independent orchestrator when Claude Code is unavailable — same OmniRoute combos |
 | Orchestration | [herdr](https://github.com/herdrdev/herdr) | Lets Claude spawn and supervise agents in terminal panes |
 | Agents | [OpenCode](https://opencode.ai) + [Gentle AI](https://github.com/Gentleman-Programming/gentle-ai) | Executes delegated tasks with the same conventions and skills |
 | Gateway | [OmniRoute](https://www.npmjs.com/package/omniroute) | OpenAI-compatible proxy with priority combos, param filters and prompt compression |
@@ -75,6 +83,19 @@ Switching the whole delegation between cloud and local is one command: `agent-pr
 | 3 · Complex | Claude Code itself | Architecture, design decisions, hard debugging, security-sensitive code, ambiguous requirements |
 
 Models are never hardcoded: Claude reads `~/.config/agent-routing/active.env` before every delegation. The complete rules live in [`home/.claude/delegation-block.md`](home/.claude/delegation-block.md).
+
+## 🤝 Codex as a peer orchestrator
+
+Claude Code is the default brain, but it is not the only one. When it is unavailable, **Codex** drives the same pipeline as an *independent* orchestrator — never a delegated agent. Two repo-managed profiles wire it straight into OmniRoute:
+
+| Command | Profile | Combo | Use |
+|---------|---------|-------|-----|
+| `codex-cloud` | `elvinlab-cloud` | `elvinlabCode` | Cloud-first, degrades to local |
+| `codex-local` | `elvinlab-local` | `elvinlabLocal` | Local `qwen3:14b` only |
+
+The profiles live in [`home/.config/codex-profiles/`](home/.config/codex-profiles/) and are deployed by `apply-patches.sh` through [`scripts/install-codex-profiles.sh`](scripts/install-codex-profiles.sh). The installer is **conservative by design**: it refuses to overwrite your existing `~/.codex/config.toml`, auth or any other profile — a conflicting file stops the install instead of clobbering it. The API key comes from `OMNIROUTE_API_KEY`; nothing secret is written to disk.
+
+**Same tiers as Claude.** Codex doesn't just run a model — it delegates like Claude does. `apply-patches.sh` injects [`home/.codex/delegation-block.md`](home/.codex/delegation-block.md) into `~/.codex/AGENTS.md` (outside the gentle-ai managed regions, idempotently), so Codex reads the **same** `~/.config/agent-routing/active.env` and routes trivial → `TIER1_MODEL`, bounded → `TIER2_MODEL` through herdr + OpenCode, keeping complex work for itself. One `agent-profile cloud|local` switches **both** brains at once.
 
 ## 🖥 Local AI: qwen3:14b on an RTX 3060
 
@@ -110,6 +131,7 @@ The service is **on demand**: it never starts at boot. `ollama-up` and `ollama-d
 | Hyprland | 0.56.2 |
 | Neovim | 0.12.5 |
 | Claude Code | 2.1.282 |
+| Codex | 0.158.0 |
 | OpenCode | 1.18.32 |
 | herdr | 0.9.1 |
 | Gentle AI | 3.7.0 |
@@ -124,6 +146,7 @@ The service is **on demand**: it never starts at boot. `ollama-up` and `ollama-d
 - **Secrets never touch git.** Keys are read from environment variables (`{env:OMNIROUTE_API_KEY}`). Provider keys, databases and memory are backed up in an [`age`](https://github.com/FiloSottile/age)-encrypted archive.
 - **Localhost only.** OmniRoute binds to `127.0.0.1` and requires an API key; the OpenCode key has no management access. No tunnels.
 - **Graceful degradation.** Quotas run out; the pipeline does not. Every combo ends on local AI.
+- **"Local" means routed to local, not sealed.** `codex-local` and the `elvinlabLocal` combo reach the local model *through* OmniRoute — the privacy guarantee lives in the routing, not the client. Repoint that alias and "local" follows it.
 - **Idempotent patches.** `apply-patches.sh` deep-merges the OmniRoute provider into OpenCode and injects a marked block into `CLAUDE.md` — safe to rerun after every Gentle AI update.
 - **Humans stay in charge.** Cheaper models never ship unreviewed code; free models sometimes invent facts, so Claude verifies every claim.
 - **Lessons are written down.** Every problem solved along the way is in [`docs/LESSONS.md`](docs/LESSONS.md).
@@ -141,11 +164,15 @@ agentic-dev-setup/
 │   ├── bootstrap.sh               ← installs and configures a fresh machine
 │   ├── backup.sh                  ← encrypted backup of secrets and data
 │   ├── restore-data.sh            ← restores the encrypted backup
-│   └── apply-patches.sh           ← custom additions on top of Gentle AI
+│   ├── apply-patches.sh           ← custom additions on top of Gentle AI
+│   └── install-codex-profiles.sh  ← installs Codex profiles + launchers
 ├── home/                          ← files that go in $HOME
 │   ├── .bashrc.d/ai.sh            ← aliases, agent-profile, secret loading
+│   ├── .bashrc.d/codex.sh         ← codex-cloud / codex-local launchers
 │   ├── .claude/delegation-block.md
-│   └── .config/agent-routing/     ← cloud / local model profiles (.example)
+│   └── .config/
+│       ├── agent-routing/         ← cloud / local model profiles (.example)
+│       └── codex-profiles/        ← Codex OmniRoute profile layers
 ├── omniroute/env.additions.example
 ├── patches/opencode-provider.json
 ├── system/etc/systemd/system/ollama.service.d/override.conf
@@ -170,6 +197,8 @@ ss -tlnp | grep 20128                        # → 127.0.0.1:20128
 curl -s http://localhost:20128/v1/models     # → Authentication required
 opencode models omniroute                    # → elvinlabCode, elvinlabFast, elvinlabLocal
 agent-profile                                # → Active: cloud
+codex-cloud "reply pong"                     # → Codex through OmniRoute (cloud)
+codex-local "reply pong"                     # → Codex through the local qwen3:14b
 ```
 
 The full checklist is in [`docs/SETUP.md`](docs/SETUP.md#verification).
