@@ -8,6 +8,9 @@ REPO="$(cd "$(dirname "$0")/.." && pwd)"
 OC="$HOME/.config/opencode/opencode.json"
 CM="$HOME/.claude/CLAUDE.md"
 
+# Install Codex profile layers and its separately managed shell helpers.
+bash "$REPO/scripts/install-codex-profiles.sh"
+
 command -v jq >/dev/null || { echo "Missing jq: sudo pacman -S jq"; exit 1; }
 
 # 1) OmniRoute provider in OpenCode (deep merge, does not overwrite Gentle AI's config)

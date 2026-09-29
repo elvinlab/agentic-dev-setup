@@ -1,0 +1,9 @@
+# Codex peer orchestrator: local model routed through OmniRoute (not Ollama directly).
+model = "elvinlabLocal"
+model_provider = "omniroute"
+
+[model_providers.omniroute]
+name = "OmniRoute (local model)"
+base_url = "http://127.0.0.1:20128/v1"
+env_key = "OMNIROUTE_API_KEY"
+wire_api = "responses"
