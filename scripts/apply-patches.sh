@@ -7,6 +7,10 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 OC="$HOME/.config/opencode/opencode.json"
 CM="$HOME/.claude/CLAUDE.md"
+AG="$HOME/.codex/AGENTS.md"
+
+# Install Codex profile layers and its separately managed shell helpers.
+bash "$REPO/scripts/install-codex-profiles.sh"
 
 command -v jq >/dev/null || { echo "Missing jq: sudo pacman -S jq"; exit 1; }
 
@@ -29,4 +33,15 @@ tail -n1 "$CM" | grep -q . && printf '\n' >> "$CM"
 cat "$REPO/home/.claude/delegation-block.md" >> "$CM"
 echo "✔ CLAUDE.md: delegation block applied ($(grep -c '<!-- elvinlab:delegation -->' "$CM") block)"
 
-echo "Restart Claude Code and OpenCode so they load the changes."
+# 3) Codex peer delegation block in AGENTS.md (outside gentle-ai managed regions)
+if [ -f "$AG" ]; then
+  cp "$AG" "$AG.bak.$(date +%Y%m%d%H%M%S)"
+  sed -i '/<!-- elvinlab:delegation-codex -->/,/<!-- \/elvinlab:delegation-codex -->/d' "$AG"
+  tail -n1 "$AG" | grep -q . && printf '\n' >> "$AG"
+  cat "$REPO/home/.codex/delegation-block.md" >> "$AG"
+  echo "✔ AGENTS.md: Codex delegation block applied ($(grep -c '<!-- elvinlab:delegation-codex -->' "$AG") block)"
+else
+  echo "✘ $AG does not exist — install Codex first, then rerun"
+fi
+
+echo "Restart Claude Code, Codex and OpenCode so they load the changes."

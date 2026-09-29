@@ -1,0 +1,9 @@
+# Codex peer orchestrator: cloud models through the local OmniRoute gateway.
+model = "elvinlabCode"
+model_provider = "omniroute"
+
+[model_providers.omniroute]
+name = "OmniRoute"
+base_url = "http://127.0.0.1:20128/v1"
+env_key = "OMNIROUTE_API_KEY"
+wire_api = "responses"
