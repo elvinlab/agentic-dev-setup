@@ -1,7 +1,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="assets/banner-light.svg">
-  <img alt="agentic-dev-setup: Claude Code delegates through herdr to OpenCode, routed by OmniRoute to free cloud providers and a local qwen3:14b model, with Engram as shared memory" src="assets/banner-dark.svg" width="100%">
+  <img alt="agentic-dev-setup: Claude Code and Codex are peer orchestrators that delegate through herdr to OpenCode, routed by OmniRoute to free cloud providers and a local qwen3:14b model, with Engram as shared memory" src="assets/banner-dark.svg" width="100%">
 </picture>
 
 <div align="center">

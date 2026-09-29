@@ -37,7 +37,7 @@ The setup currently documents Claude Code as its only top-level orchestrator. Co
 ### COD-2 — Document Codex peer orchestration and recovery
 - [x] Add Codex orchestration instructions and update README, setup, OmniRoute, backup, and restore guidance to include Codex without implying it is Claude-delegated. → README.md, docs/SETUP.md, docs/OMNIROUTE.md.
 - [x] Document profile selection, authentication/key sourcing, privacy/routing distinction, on-demand service checks, and verification/rebuild steps. → SETUP verification block (codex-cloud/codex-local, marker grep) + OMNIROUTE "Verifying real routing" (log check) + backup section (Codex additions reproduced via apply-patches, auth never copied).
-- [ ] Follow-up: regenerate the animated banner to show Codex as a peer brain (tools/banner.py + assets/banner-*.svg). Deferred — visual layout change, not a docs task.
+- [x] Follow-up: regenerate the animated banner to show Codex as a peer brain (tools/banner.py + assets/banner-*.svg). Done — entry column now stacks Claude Code + Codex (dashed peer link), both converge into herdr; canvas 1200x470; SVGs validated well-formed. Visual aesthetics not eyeballed by the agent.
 - **Acceptance:** a fresh-machine reader can set up and verify Codex as a peer orchestrator without overwriting existing Codex settings or confusing cloud/local routing; backup guidance does not include credentials.
 - **Checks:** Markdown/link review; script/doc commands match actual implementation; focused full functional checks at task closure.
 - **Route:** delegated direct. Trigger evidence: multiple non-trivial documentation and recovery files.

@@ -13,32 +13,54 @@ THEMES = {
     "light": dict(bg1="#fbfbff", bg2="#eef0ff", box="#ffffff", text="#0d1117", muted="#57606a", line="#c9c3ee"),
 }
 
-STAGES = [
-    ("Claude Code", "the brain · tier 3"),
-    ("herdr", "agent panes"),
-    ("OpenCode", "Gentle AI · tier 1–2"),
-    ("OmniRoute", "priority combos"),
-]
+# Two peer brains share the entry column; the rest is the linear pipeline.
+BRAINS = [("Claude Code", "the brain · tier 3", 2), ("Codex", "peer · fallback brain", 1.5)]
+PIPE = [("herdr", "agent panes"), ("OpenCode", "Gentle AI · tier 1–2"), ("OmniRoute", "priority combos")]
 TARGETS = [("NVIDIA NIM", CYAN), ("Mistral", CYAN), ("Gemini", CYAN), ("Groq", CYAN), ("qwen3:14b · local", PINK)]
 
 
 def banner(t):
-    w, h = 1200, 420
-    bx, bw, bh, gap, cy = 48, 190, 84, 40, 292
+    w, h = 1200, 470
+    bx, bw, gap, cy = 48, 190, 40, 300
+    bh, bhb = 84, 66  # pipeline box height, brain box height
     boxes, links = [], []
-    for i, (name, sub) in enumerate(STAGES):
-        x = bx + i * (bw + gap)
-        accent = VIOLET if i == 0 else CYAN
+
+    def colx(i):
+        return bx + i * (bw + gap)
+
+    def box(x, ycenter, height, name, sub, stroke, sw):
         boxes.append(f'''
-  <rect x="{x}" y="{cy - bh / 2}" width="{bw}" height="{bh}" rx="14" fill="{t["box"]}" stroke="{accent if i == 0 else t["line"]}" stroke-width="{2 if i == 0 else 1.5}"/>
-  <text x="{x + bw / 2}" y="{cy - 4}" class="stage" text-anchor="middle">{name}</text>
-  <text x="{x + bw / 2}" y="{cy + 20}" class="sub" text-anchor="middle">{sub}</text>''')
-        if i < len(STAGES) - 1:
+  <rect x="{x}" y="{ycenter - height / 2}" width="{bw}" height="{height}" rx="14" fill="{t["box"]}" stroke="{stroke}" stroke-width="{sw}"/>
+  <text x="{x + bw / 2}" y="{ycenter - 4}" class="stage" text-anchor="middle">{name}</text>
+  <text x="{x + bw / 2}" y="{ycenter + 20}" class="sub" text-anchor="middle">{sub}</text>''')
+
+    # Entry column: two stacked peer brains.
+    x0 = colx(0)
+    cyA, cyB = cy - 46, cy + 46
+    box(x0, cyA, bhb, BRAINS[0][0], BRAINS[0][1], VIOLET, BRAINS[0][2])
+    box(x0, cyB, bhb, BRAINS[1][0], BRAINS[1][1], VIOLET, BRAINS[1][2])
+    links.append(f'<path d="M{x0 + bw / 2} {cyA + bhb / 2} V{cyB - bhb / 2}" stroke="{VIOLET}" stroke-width="1.5" stroke-dasharray="3 4"/>')
+
+    # Both brains converge into herdr.
+    hx = colx(1)
+    for byc in (cyA, cyB):
+        x1 = x0 + bw
+        d = f"M{x1} {byc} C{x1 + 24} {byc} {hx - 24} {cy} {hx} {cy}"
+        links.append(f'<path d="{d}" fill="none" stroke="{t["line"]}" stroke-width="2"/>'
+                     f'<path d="{d}" fill="none" class="flow" stroke="url(#g)" stroke-width="3" stroke-dasharray="12 {gap}"/>')
+
+    # Linear pipeline: herdr → OpenCode → OmniRoute.
+    for k, (name, sub) in enumerate(PIPE):
+        i = k + 1
+        x = colx(i)
+        box(x, cy, bh, name, sub, t["line"], 1.5)
+        if k < len(PIPE) - 1:
             x1, x2 = x + bw, x + bw + gap
             links.append(f'<path d="M{x1} {cy} H{x2}" stroke="{t["line"]}" stroke-width="2"/>'
-                         f'<path d="M{x1} {cy} H{x2}" class="flow" stroke="url(#g)" stroke-width="3" stroke-dasharray="12 {gap}" style="animation-delay:{i * .4}s"/>')
+                         f'<path d="M{x1} {cy} H{x2}" class="flow" stroke="url(#g)" stroke-width="3" stroke-dasharray="12 {gap}" style="animation-delay:{k * .4}s"/>')
+
     # Fan-out from OmniRoute to providers.
-    ox = bx + 3 * (bw + gap) + bw
+    ox = colx(3) + bw
     px, pw, ph, pg = ox + 40, w - 48 - (ox + 40), 30, 8
     top = cy - (len(TARGETS) * ph + (len(TARGETS) - 1) * pg) / 2
     pills = []
@@ -51,13 +73,14 @@ def banner(t):
                      f'<path d="{d}" fill="none" class="flow" stroke="{color}" stroke-width="2.5" stroke-dasharray="10 60" style="animation-delay:{1.2 + j * .25}s"/>')
         pills.append(f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="15" fill="{color}" fill-opacity="{.16 if local else .08}" stroke="{color}" stroke-opacity="{.9 if local else .45}" stroke-width="1.2"/>'
                      f'<text x="{px + pw / 2}" y="{mid + 5}" class="pill{" local" if local else ""}" text-anchor="middle">{name}</text>')
-    # Shared memory rail under the first three stages.
-    ry = cy + bh / 2 + 34
-    rail_end = bx + 2 * (bw + gap) + bw
-    rail = (f'<path d="M{bx + bw / 2} {cy + bh / 2} V{ry} M{bx + 2 * (bw + gap) + bw / 2} {cy + bh / 2} V{ry}" stroke="{VIOLET}" stroke-width="1.5" stroke-dasharray="3 4"/>'
-            f'<path d="M{bx + bw / 2} {ry} H{bx + 2 * (bw + gap) + bw / 2}" stroke="{VIOLET}" stroke-width="1.5" stroke-dasharray="3 4"/>'
-            f'<text x="{(bx + rail_end) / 2}" y="{ry + 22}" class="rail" text-anchor="middle">ENGRAM · SHARED MEMORY</text>')
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="agentic-dev-setup: Claude Code delegates through herdr to OpenCode, routed by OmniRoute to free cloud providers and a local qwen3:14b model, with Engram as shared memory">
+
+    # Shared memory rail under the brains, herdr and OpenCode.
+    ry = 408
+    rx0, rx1, rx2 = x0 + bw / 2, colx(1) + bw / 2, colx(2) + bw / 2
+    rail = (f'<path d="M{rx0} {cyB + bhb / 2} V{ry} M{rx1} {cy + bh / 2} V{ry} M{rx2} {cy + bh / 2} V{ry}" stroke="{VIOLET}" stroke-width="1.5" stroke-dasharray="3 4"/>'
+            f'<path d="M{rx0} {ry} H{rx2}" stroke="{VIOLET}" stroke-width="1.5" stroke-dasharray="3 4"/>'
+            f'<text x="{(rx0 + rx2) / 2}" y="{ry + 22}" class="rail" text-anchor="middle">ENGRAM · SHARED MEMORY</text>')
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="agentic-dev-setup: Claude Code and Codex are peer orchestrators that delegate through herdr to OpenCode, routed by OmniRoute to free cloud providers and a local qwen3:14b model, with Engram as shared memory">
 <defs>
   <linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{VIOLET}"/><stop offset=".55" stop-color="{CYAN}"/><stop offset="1" stop-color="{PINK}"/></linearGradient>
   <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{t["bg1"]}"/><stop offset="1" stop-color="{t["bg2"]}"/></linearGradient>
