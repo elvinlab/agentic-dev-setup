@@ -22,6 +22,8 @@ It generates `~/ai-backup-YYYYMMDD-HHMM.tar.gz.age` containing:
 - `~/.config/secrets/`: your OmniRoute key
 - The herdr configuration, plus reference copies of `opencode.json`, `CLAUDE.md` and `.bashrc`
 
+The backup does **not** include anything Codex-related. The repo-managed Codex additions (profiles, `codex.sh` launchers and the `AGENTS.md` delegation block) are reproduced by rerunning `./scripts/apply-patches.sh`. Your own `~/.codex` auth and config stay user-managed: this repo never copies them, so sign in to Codex again on a fresh machine.
+
 **Copy that file off the machine** (USB drive or cloud) and store the password in your password manager. Without it there is no restore.
 
 ---
@@ -70,6 +72,16 @@ gentle-ai install --agent claude-code,opencode
 
 Adds the OmniRoute provider to OpenCode and the delegation block to `CLAUDE.md` without overwriting Gentle AI's configuration. Safe to rerun after every `gentle-ai install`.
 
+It also sets up **Codex** as an independent peer orchestrator (a fallback brain next to Claude Code, not a delegated agent):
+
+- Installs the profiles `~/.codex/elvinlab-cloud.config.toml` and `elvinlab-local.config.toml` (OmniRoute at `127.0.0.1:20128`, `wire_api = "responses"`, key from `OMNIROUTE_API_KEY`) through `scripts/install-codex-profiles.sh`.
+- Installs the launchers `~/.bashrc.d/codex.sh`: `codex-cloud` (`codex --profile elvinlab-cloud`, combo `elvinlabCode`) and `codex-local` (`codex --profile elvinlab-local`, combo `elvinlabLocal`).
+- Injects the tier delegation block into `~/.codex/AGENTS.md`, outside Gentle AI's managed regions (markers `<!-- elvinlab:delegation-codex -->`). Codex must be installed and have created `AGENTS.md` first; otherwise the script says so, and you rerun it afterwards.
+
+Your own `~/.codex` config and auth are never touched. If a profile or launcher already exists with different content, the installer refuses to overwrite it: move it aside or compare it manually, then rerun.
+
+Codex shares Engram and `~/.config/agent-routing/active.env` with Claude Code, so `agent-profile cloud|local` switches both brains, and Codex delegates trivial and bounded work to OpenCode with the same tiers.
+
 ### 6. herdr skill for Claude Code
 
 ```bash
@@ -101,6 +113,12 @@ opencode models omniroute                   # → elvinlabCode, elvinlabFast, el
 # Delegation
 agent-profile                               # → Active: cloud
 grep -c '<!-- elvinlab:delegation -->' ~/.claude/CLAUDE.md   # → 1
+
+# Codex (peer orchestrator; OmniRoute must be running, plus Ollama for codex-local)
+ls ~/.codex/elvinlab-*.config.toml          # → elvinlab-cloud… and elvinlab-local…
+grep -c '<!-- elvinlab:delegation-codex -->' ~/.codex/AGENTS.md   # → 1
+codex-cloud "reply pong"                    # → pong (via elvinlabCode)
+codex-local "reply pong"                    # → pong (via elvinlabLocal)
 ```
 
 In Claude Code (inside herdr): `echo $HERDR_ENV` → `1`, `/mcp` → engram connected. Then ask it to write a test **without mentioning herdr**: it should delegate to OpenCode and review the diff.
@@ -114,7 +132,7 @@ In the OmniRoute dashboard: test each combo with ▶ and confirm it resolves on 
 1. `pkill voxtype` if it is running (frees ~3 GB of VRAM)
 2. Pane 1: `omniroute`
 3. Pane 2: `ollama-up`
-4. Claude Code and OpenCode in your project
+4. Claude Code and OpenCode in your project (or `codex-cloud` / `codex-local` as the fallback brain)
 5. When done: Ctrl+C in both panes and `ollama-down`
 
 Delegation profiles: `agent-profile` (show), `agent-profile cloud` / `agent-profile local` (switch).

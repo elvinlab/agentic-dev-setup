@@ -53,6 +53,18 @@ Without this, NVIDIA answers 400 and Mistral 422 to real OpenCode + Gentle AI re
 ### elvinlabLocal — local AI only
 1. Ollama → `qwen3:14b`
 
+`elvinlabCode` is cloud-first: it only reaches local `qwen3:14b` if every free cloud provider before it fails. `elvinlabLocal` always goes straight to local.
+
+**Callers.** Codex reaches the same combos through `wire_api = "responses"` (the `/v1/responses` endpoint). OmniRoute serves `elvinlabCode` over both `/v1/chat/completions` and `/v1/responses`, and the combos behave identically regardless of the caller.
+
+**Verifying real routing.** The log lives at `~/.omniroute/logs/application/app.log`. Search it for the combo name to see which provider actually served a request:
+
+```bash
+rg elvinlabCode ~/.omniroute/logs/application/app.log | tail
+```
+
+For example, `elvinlabCode` resolving to `nvidia/nemotron-3-ultra` with `0 fallbacks` means the request hit the cloud, not the local fallback.
+
 When adding each step, make sure **ACCOUNT** is the right connection. If you change or recreate a connection, redo the combo steps that pointed to the old one.
 
 Models that did NOT work (free tier, September 2026): Gemini 2.5 Flash / 2.5 Flash-Lite / Pro (retired for new accounts), Kimi K3 on NIM (works but ~30 s per response), and models marked "system" instead of "imported" are usually unavailable.

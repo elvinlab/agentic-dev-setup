@@ -35,8 +35,9 @@ The setup currently documents Claude Code as its only top-level orchestrator. Co
 - **RDD evidence:** committed-only assessment against `3c8aa85` returned high (`shell_process` in `scripts/apply-patches.sh` and `home/.bashrc.d/codex.sh`), `review_due=true`, `review_due_reason=high_risk`. The prescribed preflight STATUS now returns a fresh `review.start` using the `exclude` scope for the unrelated untracked files. Candidate reviewer consent is pending; do not start review without the user's grant.
 
 ### COD-2 — Document Codex peer orchestration and recovery
-- [ ] Add Codex orchestration instructions and update README, setup, OmniRoute, backup, and restore guidance to include Codex without implying it is Claude-delegated.
-- [ ] Document profile selection, authentication/key sourcing, privacy/routing distinction, on-demand service checks, and verification/rebuild steps.
+- [x] Add Codex orchestration instructions and update README, setup, OmniRoute, backup, and restore guidance to include Codex without implying it is Claude-delegated. → README.md, docs/SETUP.md, docs/OMNIROUTE.md.
+- [x] Document profile selection, authentication/key sourcing, privacy/routing distinction, on-demand service checks, and verification/rebuild steps. → SETUP verification block (codex-cloud/codex-local, marker grep) + OMNIROUTE "Verifying real routing" (log check) + backup section (Codex additions reproduced via apply-patches, auth never copied).
+- [ ] Follow-up: regenerate the animated banner to show Codex as a peer brain (tools/banner.py + assets/banner-*.svg). Deferred — visual layout change, not a docs task.
 - **Acceptance:** a fresh-machine reader can set up and verify Codex as a peer orchestrator without overwriting existing Codex settings or confusing cloud/local routing; backup guidance does not include credentials.
 - **Checks:** Markdown/link review; script/doc commands match actual implementation; focused full functional checks at task closure.
 - **Route:** delegated direct. Trigger evidence: multiple non-trivial documentation and recovery files.
