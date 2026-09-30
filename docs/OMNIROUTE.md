@@ -1,87 +1,89 @@
-# OmniRoute configuration (reference)
+# Configuración de OmniRoute (referencia)
 
-If you restore `~/.omniroute/.env` + `storage.sqlite` from the backup, all of this is already included. This document is for **recreating it by hand** if you lost the backup, or for checking that everything matches.
+**Español** · [English](OMNIROUTE.en.md)
 
-Dashboard: `http://localhost:20128`
+Si restauras `~/.omniroute/.env` y `storage.sqlite` desde el respaldo, ya tendrás toda esta configuración. Este documento explica cómo **recrearla manualmente** si perdiste el respaldo o cómo comprobar que todo esté configurado correctamente.
 
-## Security
+Panel: `http://localhost:20128`
 
-- `~/.omniroute/.env` with `OMNIROUTE_SERVER_HOST=127.0.0.1` and `REQUIRE_API_KEY=true` (see [`omniroute/env.additions.example`](../omniroute/env.additions.example)).
-- Verify: `ss -tlnp | grep 20128` must show `127.0.0.1:20128`, and `curl -s http://localhost:20128/v1/models` without a key must answer `Authentication required`.
-- **Endpoints → "OmniRoute cloud": disabled.** Do not use tunnels.
-- **API manager:** one key for OpenCode, **without management access**. Store it in `~/.config/secrets/ai.env`.
-- Change the dashboard password in Settings → Security.
+## Seguridad
 
-## Providers (all with an official API key, "Import only free models" enabled)
+- Configura `~/.omniroute/.env` con `OMNIROUTE_SERVER_HOST=127.0.0.1` y `REQUIRE_API_KEY=true` (consulta [`omniroute/env.additions.example`](../omniroute/env.additions.example)).
+- Verifica: `ss -tlnp | grep 20128` debe mostrar `127.0.0.1:20128`, y `curl -s http://localhost:20128/v1/models` sin una clave debe responder `Authentication required`.
+- **Endpoints → "OmniRoute cloud": desactivado.** No uses túneles.
+- **API manager:** una clave para OpenCode, **sin acceso de administración**. Guárdala en `~/.config/secrets/ai.env`.
+- Cambia la contraseña del panel en Settings → Security.
 
-| Provider | Key at | Notes |
+## Proveedores (todos con una clave de API oficial y la opción "Import only free models" habilitada)
+
+| Proveedor | Clave en | Notas |
 |---|---|---|
-| NVIDIA NIM | build.nvidia.com | Primary. Developer access ~40 req/min |
-| Mistral | console.mistral.ai | Free tier with phone verification |
-| Gemini (Google AI Studio) | aistudio.google.com → API keys | Choose the **API key** option, not Gemini CLI. **Never** enable billing |
-| Groq | console.groq.com | Per-model limits |
-| Ollama (local) | — | URL `http://localhost:11434` (or `/v1`). No key |
+| NVIDIA NIM | build.nvidia.com | Principal. Acceso para desarrolladores: ~40 solicitudes/min |
+| Mistral | console.mistral.ai | Nivel gratuito con verificación telefónica |
+| Gemini (Google AI Studio) | aistudio.google.com → API keys | Elige la opción **API key**, no Gemini CLI. **Nunca** habilites la facturación |
+| Groq | console.groq.com | Límites por modelo |
+| Ollama (local) | — | URL `http://localhost:11434` (o `/v1`). Sin clave |
 
-Discarded: **Cerebras** (402, requires payment), **OpenRouter** (50 req/day is too little), **Zhipu** (complicated sign-up; GLM is already on NIM). Avoid OAuth/session-based providers (Antigravity, Kiro, OpenCode Free via proxy, Gemini CLI): terms-of-service and account-suspension risk.
+Descartados: **Cerebras** (402, requiere pago), **OpenRouter** (50 solicitudes/día es insuficiente), **Zhipu** (registro complicado; GLM ya está en NIM). Evita proveedores basados en OAuth o sesiones (Antigravity, Kiro, OpenCode Free mediante proxy, Gemini CLI): implican riesgos relacionados con las condiciones del servicio y la suspensión de la cuenta.
 
-**Test each key in the provider's Playground**, not with "Check" (it can give false positives).
+**Prueba cada clave en el Playground del proveedor**, no con "Check" (puede dar falsos positivos).
 
-## Param Filters (essential!)
+## Filtros de parámetros (¡esenciales!)
 
-In **Providers → NVIDIA / Mistral / Groq → Param Filters → Blocked parameters**:
+En **Providers → NVIDIA / Mistral / Groq → Param Filters → Blocked parameters**:
 
 ```
 __managed_by, _omnirouteSkipContextRelay, _omnirouteInternalRequest
 ```
 
-Without this, NVIDIA answers 400 and Mistral 422 to real OpenCode + Gentle AI requests.
+Sin esto, NVIDIA responde 400 y Mistral 422 ante solicitudes reales de OpenCode + Gentle AI.
 
-## Combos (strategy: **Priority** on all)
+## Combinaciones (estrategia: **Priority** en todas)
 
-### elvinlabCode — implementation, quality
+### elvinlabCode — implementación y calidad
 1. NVIDIA → `nvidia/nemotron-3-ultra-550b-a55b`
 2. Mistral → `codestral` (2508 / latest)
 3. Gemini → `gemini-3-flash-preview`
 4. Ollama → `qwen3:14b`
 
-### elvinlabFast — short tasks, speed
+### elvinlabFast — tareas cortas y velocidad
 1. Groq → `openai/gpt-oss-120b`
-2. Groq → `openai/gpt-oss-20b` (separate per-model quota)
+2. Groq → `openai/gpt-oss-20b` (cuota independiente por modelo)
 3. NVIDIA → `nvidia/nemotron-3.5-lightning-30b-a3b`
 4. Ollama → `qwen3:14b`
 
-### elvinlabLocal — local AI only
+### elvinlabLocal — solo IA local
 1. Ollama → `qwen3:14b`
 
-`elvinlabCode` is cloud-first: it only reaches local `qwen3:14b` if every free cloud provider before it fails. `elvinlabLocal` always goes straight to local.
+`elvinlabCode` prioriza la nube: solo llega a `qwen3:14b` local si fallan todos los proveedores gratuitos en la nube anteriores. `elvinlabLocal` siempre se conecta directamente al modelo local.
 
-**Callers.** Codex reaches the same combos through `wire_api = "responses"` (the `/v1/responses` endpoint). OmniRoute serves `elvinlabCode` over both `/v1/chat/completions` and `/v1/responses`, and the combos behave identically regardless of the caller.
+**Clientes.** Codex accede a las mismas combinaciones mediante `wire_api = "responses"` (el endpoint `/v1/responses`). OmniRoute ofrece `elvinlabCode` tanto en `/v1/chat/completions` como en `/v1/responses`, y las combinaciones se comportan igual sin importar el cliente.
 
-**Verifying real routing.** The log lives at `~/.omniroute/logs/application/app.log`. Search it for the combo name to see which provider actually served a request:
+**Verificar el enrutamiento real.** El registro está en `~/.omniroute/logs/application/app.log`. Busca el nombre de la combinación para ver qué proveedor atendió realmente la solicitud:
 
 ```bash
 rg elvinlabCode ~/.omniroute/logs/application/app.log | tail
 ```
 
-For example, `elvinlabCode` resolving to `nvidia/nemotron-3-ultra` with `0 fallbacks` means the request hit the cloud, not the local fallback.
+Por ejemplo, si `elvinlabCode` se resuelve en `nvidia/nemotron-3-ultra` con `0 fallbacks`, la solicitud llegó a la nube, no al respaldo local.
 
-When adding each step, make sure **ACCOUNT** is the right connection. If you change or recreate a connection, redo the combo steps that pointed to the old one.
+Al agregar cada paso, asegúrate de que **ACCOUNT** sea la conexión correcta. Si cambias o recreas una conexión, vuelve a configurar los pasos de las combinaciones que usaban la anterior.
 
-Models that did NOT work (free tier, September 2026): Gemini 2.5 Flash / 2.5 Flash-Lite / Pro (retired for new accounts), Kimi K3 on NIM (works but ~30 s per response), and models marked "system" instead of "imported" are usually unavailable.
+Modelos que NO funcionaron (nivel gratuito, septiembre de 2026): Gemini 2.5 Flash / 2.5 Flash-Lite / Pro (retirados para cuentas nuevas), Kimi K3 en NIM (funciona, pero tarda unos 30 s por respuesta), y los modelos marcados como "system" en lugar de "imported", que normalmente no están disponibles.
 
-## Compression
+## Compresión
 
 **Compression Settings:**
-- Main switch **Prompt Compression: ON**
-- **RTK: ON** at **Minimal** level
+- Interruptor principal **Prompt Compression: ON**
+- **RTK: ON** en nivel **Minimal**
 - **Session Dedup: ON**
-- Everything else off (Lite, CCR, Headroom, Relevance, Caveman…)
+- Todo lo demás desactivado (Lite, CCR, Headroom, Relevance, Caveman…)
 
 RTK: Tool results ON, Code blocks OFF, Assistant messages OFF, raw output retention "never".
 
-## Leave disabled
+## Mantener desactivado
 
-- OmniRoute's own memory (Engram is already the memory)
-- OmniRoute MCP server
+- La memoria propia de OmniRoute (Engram ya cumple esa función)
+- El servidor MCP de OmniRoute
 - MITM / TPROXY
-- Fusion and Auto Combo (for later)
+- Fusion y Auto Combo (para más adelante)
