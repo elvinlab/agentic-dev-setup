@@ -184,6 +184,21 @@ agentic-dev-setup/
 └── tools/                         ← banner generator
 ```
 
+## 📚 Documentation
+
+| I want to… | Go to |
+|------------|-------|
+| Know what I need (accounts, cost, hardware, knowledge) | [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) |
+| Install or rebuild the environment | [docs/SETUP.md](docs/SETUP.md) |
+| Run it on Windows (WSL2) | [docs/SETUP.md](docs/SETUP.md) |
+| Configure OmniRoute providers & combos | [docs/OMNIROUTE.md](docs/OMNIROUTE.md) |
+| Make it my own (names, profiles, models) | [docs/CUSTOMIZATION.md](docs/CUSTOMIZATION.md) |
+| Handle API keys & secrets safely | [docs/SECRETS.md](docs/SECRETS.md) |
+| See tested distros / GPUs (or report mine) | [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) |
+| Fix a known problem | [docs/LESSONS.md](docs/LESSONS.md) |
+| Contribute | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Report a vulnerability | [SECURITY.md](SECURITY.md) |
+
 ## 🚀 Quick start
 
 New here? See [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) for the accounts, hardware and knowledge you need before starting.
