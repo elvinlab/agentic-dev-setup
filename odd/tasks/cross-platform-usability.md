@@ -86,5 +86,17 @@ forever. Decisions taken with the user:
 - Claude fix on top of delegation: OpenCode now auto-installs via official
   script on non-Arch (was echo-only), idempotent guard added.
 
+## Review evidence
+- Commit e63b67d: RDD on (global). assess = high_risk (executable_mode,
+  process_boundary, shell_source). Consent GRANTED by user. Native 4-lens
+  review (risk/resilience/readability/reliability) → APPROVED, acknowledged
+  (lineage review-560975161a74f915, gentle-ai.review-acknowledged/v1).
+  13 advisory findings, all non-blocking/informational.
+- Advisory fixes applied on top (own commit): `apt-get update` before apt
+  install (fresh-Ubuntu/WSL2), ollama non-Arch idempotency guard, and
+  distro_is_wsl now wired into the systemctl-missing message (was dead code).
+  Deferred advisories: curl|sh installer risk (inherent), eval install-cmd
+  string, dnf update parity — documented, not blocking.
+
 ## Next step
 CPU-4: docs (README.md + docs/SETUP.md) — delegate to elvinlabCode.

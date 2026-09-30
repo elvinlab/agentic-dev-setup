@@ -18,6 +18,8 @@ fi
 
 # ---------------------------------------------------------------------------
 step "1. System packages"
+# apt needs a fresh package index or a clean install fails (e.g. fresh WSL2 Ubuntu).
+[[ "$MGR" == "apt" ]] && sudo apt-get update
 pkgs=()
 for logical in git jq age sqlite; do
   resolved="$(distro_resolve_pkg "$MGR" "$logical")"
@@ -27,12 +29,14 @@ if [[ ${#pkgs[@]} -gt 0 ]]; then
   eval "$(distro_install_cmd "$MGR") ${pkgs[*]}"
 fi
 
-# Ollama: on Arch use pacman packages, elsewhere use official installer
+# Ollama: on Arch use pacman packages, elsewhere use the official installer.
 if [[ "$MGR" == "pacman" ]]; then
   for logical in ollama ollama-cuda; do
     resolved="$(distro_resolve_pkg "$MGR" "$logical")"
     [[ -n "$resolved" ]] && eval "$(distro_install_cmd "$MGR") $resolved"
   done
+elif command -v ollama >/dev/null; then
+  echo "✔ Ollama already installed"
 else
   # Official script auto-detects CUDA
   curl -fsSL https://ollama.com/install.sh | sh
@@ -107,8 +111,12 @@ if command -v systemctl >/dev/null; then
   sudo systemctl stop ollama
   echo "✔ Ollama ready. Use it with: ollama-up / ollama-down"
 else
-  echo "⚠ systemctl not available (e.g., WSL2 without systemd)."
-  echo "  Enable systemd in WSL2 (see docs) or start ollama manually:"
+  if distro_is_wsl; then
+    echo "⚠ No systemctl: this looks like WSL2 without systemd."
+    echo "  Enable systemd in WSL2 (see docs/SETUP.md) or start ollama manually:"
+  else
+    echo "⚠ systemctl not available; start ollama manually:"
+  fi
   echo "  ollama serve &"
   echo "  ollama pull qwen3:14b"
 fi
