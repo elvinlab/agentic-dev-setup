@@ -62,7 +62,7 @@ Para los detalles de instalación y el procedimiento para Windows/WSL2, consulta
 
 **Instalado manualmente** (según la documentación oficial correspondiente): **Claude Code**, **Gentle AI** (que también instala Engram), **herdr**, **OmniRoute** (npm) y, opcionalmente, **Codex** (par).
 
-Las versiones exactas probadas se encuentran en la sección «Versions this setup was tested with» del [README](../README.md).
+Las versiones exactas probadas se encuentran en la sección «Versiones con las que se probó este setup (septiembre 2026)» del [README](../README.md).
 
 ---
 
