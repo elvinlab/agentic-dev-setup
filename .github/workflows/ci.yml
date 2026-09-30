@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  shell:
+    name: shellcheck + tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Shellcheck
+        run: shellcheck scripts/*.sh scripts/lib/*.sh tests/*.sh
+
+      - name: Run tests
+        run: |
+          status=0
+          for t in tests/*.sh; do
+            echo "== $t =="
+            bash "$t" || status=1
+          done
+          exit $status
