@@ -36,7 +36,7 @@ Claude Code funciona iniciando sesión con esa suscripción: **no necesitas una 
 
 ## 🖥 Hardware
 
-**Equipo de referencia (probado):** AMD Ryzen 5 5600X, NVIDIA GeForce RTX 3060 de 12 GB. (Consulta la tabla [«Mi estación de trabajo» del README](../README.md#-my-workstation)).
+**Equipo de referencia (probado):** AMD Ryzen 5 5600X, NVIDIA GeForce RTX 3060 de 12 GB. (Consulta la tabla [«Mi estación de trabajo» del README](../README.md)).
 
 **Generalización:** cualquier equipo Linux x86_64. Se recomienda una GPU NVIDIA para ejecutar el modelo local; unos 12 GB de VRAM permiten usar `qwen3:14b` con un contexto de 16k. Con menos VRAM, usa un modelo más pequeño o un contexto más corto. Sin GPU NVIDIA, el modelo local funciona en la CPU (mucho más lento) y puedes apoyarte en las combinaciones gratuitas en la nube.
 
