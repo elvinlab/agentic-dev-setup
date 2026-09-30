@@ -9,6 +9,6 @@ Explain why this change is needed.
 ## Checklist
 
 - [ ] `shellcheck scripts/*.sh scripts/lib/*.sh tests/*.sh` passes
-- [ ] `bash tests/*.sh` (or the relevant test) passes
+- [ ] `for t in tests/*.sh; do bash "$t"; done` (or the relevant test) passes
 - [ ] Docs updated if behavior changed
 - [ ] Conventional Commit message(s)

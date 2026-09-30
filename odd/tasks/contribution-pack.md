@@ -52,5 +52,15 @@ standard contribution surface. User chose the contribution pack (items 1-4).
   pass locally).
 - Issue/PR templates render (valid front matter).
 
-## Next step
-CTB-1..4: delegate to elvinlabCode with exact specs (ci.yml verbatim).
+## Status: COMPLETE (on branch feat/contribution-pack)
+All 7 files created and verified (actionlint/shellcheck/tests green, valid
+template front matter). Native review APPROVED + acknowledged
+(commit cff402f, lineage review-33bf648e66084ee4; 11 non-blocking advisories).
+Advisory fixes applied on top: PR-template test command uses the loop form
+(not `bash tests/*.sh`), and ci.yml gained `permissions: contents: read` and
+`timeout-minutes`.
+
+Delivery (merge/push) is the user's decision.
+
+## Later slices (out of scope here)
+SECURITY.md + CODE_OF_CONDUCT.md; Spanish docs; support matrix; releases.
