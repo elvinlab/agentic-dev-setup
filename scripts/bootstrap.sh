@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installs and configures the AI agent environment on a fresh Omarchy install.
+# Installs and configures the AI agent environment on a fresh Linux install (Arch, Debian/Ubuntu or Fedora; WSL2 supported).
 # Usage: ./scripts/bootstrap.sh
 # Safe to run more than once. Lines marked VERIFY use install commands that
 # may change: check them against the official documentation.
@@ -8,15 +8,44 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 step() { printf '\n\033[1;32m==> %s\033[0m\n' "$1"; }
 
+# Detect package manager
+source "$REPO/scripts/lib/distro.sh"
+MGR="$(distro_detect_manager)"
+if [[ -z "$MGR" ]]; then
+  echo "Unsupported distro: need pacman, apt-get or dnf" >&2
+  exit 1
+fi
+
 # ---------------------------------------------------------------------------
 step "1. System packages"
-sudo pacman -S --needed --noconfirm git jq age sqlite ollama ollama-cuda
+pkgs=()
+for logical in git jq age sqlite; do
+  resolved="$(distro_resolve_pkg "$MGR" "$logical")"
+  [[ -n "$resolved" ]] && pkgs+=("$resolved")
+done
+if [[ ${#pkgs[@]} -gt 0 ]]; then
+  eval "$(distro_install_cmd "$MGR") ${pkgs[*]}"
+fi
 
-step "2. OpenCode (AUR)"
-if command -v yay >/dev/null; then
+# Ollama: on Arch use pacman packages, elsewhere use official installer
+if [[ "$MGR" == "pacman" ]]; then
+  for logical in ollama ollama-cuda; do
+    resolved="$(distro_resolve_pkg "$MGR" "$logical")"
+    [[ -n "$resolved" ]] && eval "$(distro_install_cmd "$MGR") $resolved"
+  done
+else
+  # Official script auto-detects CUDA
+  curl -fsSL https://ollama.com/install.sh | sh
+fi
+
+step "2. OpenCode"
+if command -v opencode >/dev/null; then
+  echo "✔ OpenCode already installed"
+elif [[ "$MGR" == "pacman" ]] && command -v yay >/dev/null; then
   yay -S --needed --noconfirm opencode-bin
 else
-  echo "⚠ yay not found. Install OpenCode with: curl -fsSL https://opencode.ai/install | bash"
+  # Official installer works on any distro (Debian/Ubuntu, Fedora, WSL2)
+  curl -fsSL https://opencode.ai/install | bash
 fi
 
 step "3. Node (mise) + OmniRoute"
@@ -54,6 +83,7 @@ cp "$REPO/home/.bashrc.d/ai.sh" "$HOME/.bashrc.d/ai.sh"
 install -m 755 "$REPO/home/.config/agent-routing/restore.sh" "$HOME/.config/agent-routing/restore.sh"
 echo "✔ restore.sh installed (run it AFTER Gentle AI: bash ~/.config/agent-routing/restore.sh)"
 
+# shellcheck disable=SC2016
 LOADER='for f in ~/.bashrc.d/*.sh; do [ -r "$f" ] && . "$f"; done'
 grep -qF "$LOADER" "$HOME/.bashrc" || printf '\n# Personal modules\n%s\n' "$LOADER" >> "$HOME/.bashrc"
 echo "✔ agent-routing, ai.sh and loader in ~/.bashrc"
@@ -67,14 +97,21 @@ fi
 
 # ---------------------------------------------------------------------------
 step "6. Tuned on-demand Ollama + local model"
-sudo install -D -m 644 "$REPO/system/etc/systemd/system/ollama.service.d/override.conf" \
-  /etc/systemd/system/ollama.service.d/override.conf
-sudo systemctl daemon-reload
-sudo systemctl disable ollama 2>/dev/null || true   # no autostart
-sudo systemctl start ollama && sleep 3
-ollama pull qwen3:14b
-sudo systemctl stop ollama
-echo "✔ Ollama ready. Use it with: ollama-up / ollama-down"
+if command -v systemctl >/dev/null; then
+  sudo install -D -m 644 "$REPO/system/etc/systemd/system/ollama.service.d/override.conf" \
+    /etc/systemd/system/ollama.service.d/override.conf
+  sudo systemctl daemon-reload
+  sudo systemctl disable ollama 2>/dev/null || true   # no autostart
+  sudo systemctl start ollama && sleep 3
+  ollama pull qwen3:14b
+  sudo systemctl stop ollama
+  echo "✔ Ollama ready. Use it with: ollama-up / ollama-down"
+else
+  echo "⚠ systemctl not available (e.g., WSL2 without systemd)."
+  echo "  Enable systemd in WSL2 (see docs) or start ollama manually:"
+  echo "  ollama serve &"
+  echo "  ollama pull qwen3:14b"
+fi
 
 # ---------------------------------------------------------------------------
 step "7. OmniRoute: security"
