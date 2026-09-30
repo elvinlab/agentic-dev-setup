@@ -190,6 +190,8 @@ New here? See [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) for the accounts, h
 
 Bootstrap supports Arch, Debian/Ubuntu, Fedora, and Windows via WSL2. See [`docs/SETUP.md`](docs/SETUP.md) for WSL2 details.
 
+See [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md) for tested distros and GPUs (and add yours).
+
 ```bash
 git clone https://github.com/elvinlab/agentic-dev-setup.git
 cd agentic-dev-setup
