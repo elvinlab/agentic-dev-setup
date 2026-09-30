@@ -1,54 +1,56 @@
-# Lessons learned and troubleshooting
+# Lecciones aprendidas y resolución de problemas
+
+**Español** · [English](LESSONS.en.md)
 
 ## OmniRoute
 
-**A provider always fails with 400 or 422 on real work, but works in the Playground.**
-Open the error in *Logs*. It almost always says which parameter is extra (`Unsupported parameter(s): ...`). Add it to that provider's *Param Filters*. Known ones: `__managed_by` (added by Gentle AI), `_omnirouteSkipContextRelay` and `_omnirouteInternalRequest` (leaked by OmniRoute itself).
+**Un proveedor siempre falla con 400 o 422 en trabajo real, pero funciona en Playground.**
+Abre el error en *Logs*. Casi siempre indica cuál parámetro sobra (`Unsupported parameter(s): ...`). Agrégalo a los *Param Filters* de ese proveedor. Algunos conocidos: `__managed_by` (agregado por Gentle AI), `_omnirouteSkipContextRelay` y `_omnirouteInternalRequest` (filtrados por la propia OmniRoute).
 
-**Editing a connection's key does not update it (still returns 401).**
-Create a new connection with "Add", test it in the Playground, redo the combo steps with the new account and delete the old one.
+**Editar la clave de una conexión no la actualiza (sigue respondiendo 401).**
+Crea una conexión nueva con "Add", pruébala en Playground, vuelve a configurar los pasos de las combinaciones con la cuenta nueva y elimina la conexión anterior.
 
-**"Check" says the key is valid, but the models return 401.**
-Some validations query a public model list. The real test is the Playground.
+**"Check" indica que la clave es válida, pero los modelos responden 401.**
+Algunas validaciones consultan una lista pública de modelos. La prueba real es Playground.
 
-**The combo jumps straight to the last step without trying the first ones.**
-The circuit breakers marked those providers as "unhealthy" after many failures. Fix the cause and restart OmniRoute (Ctrl+C and `omniroute`).
+**La combinación salta directamente al último paso sin probar los anteriores.**
+Los interruptores automáticos marcaron esos proveedores como "unhealthy" después de muchos errores. Corrige la causa y reinicia OmniRoute (Ctrl+C y `omniroute`).
 
-**In the combo test, Ollama fails after ~15 s.**
-That is the test's time limit; Qwen3 reasons before answering. It works in real use, just slowly. It is the last fallback.
+**En la prueba de la combinación, Ollama falla después de unos 15 s.**
+Ese es el límite de tiempo de la prueba; Qwen3 razona antes de responder. En el uso real funciona, aunque con lentitud. Es la última alternativa.
 
-**Error 429.** Free-tier rate limit. Wait 1–2 minutes.
+**Error 429.** Límite de solicitudes del nivel gratuito. Espera entre 1 y 2 minutos.
 
-**"system" models in the combo selector fail.** They come from OmniRoute's catalog, not from your account. Prefer the "imported" ones.
+**Fallan los modelos "system" del selector de combinaciones.** Provienen del catálogo de OmniRoute, no de tu cuenta. Prefiere los modelos "imported".
 
 ## OpenCode + Gentle AI
 
-- Each request sends ~45–50k tokens (Gentle AI instructions + tools). It burns quotas quickly and does not fit in Ollama's 16k context (it arrives truncated).
-- Free models sometimes make things up (e.g. they saved to Engram that a project used the Composition API when it used the Options API). That is why Claude always reviews.
-- OpenCode always shows the combo name as the model; to see which real model answered, check *Logs* in OmniRoute.
+- Cada solicitud envía unos 45–50k tokens (instrucciones y herramientas de Gentle AI). Esto agota las cuotas rápidamente y no cabe en el contexto de 16k de Ollama (llega truncada).
+- A veces los modelos gratuitos inventan información (por ejemplo, guardaron en Engram que un proyecto usaba la Composition API cuando en realidad usaba la Options API). Por eso Claude siempre revisa los resultados.
+- OpenCode siempre muestra el nombre de la combinación como modelo; para ver qué modelo real respondió, consulta *Logs* en OmniRoute.
 
 ## Claude Code
 
-- `CLAUDE.md` is loaded when the session starts: after editing it, restart Claude Code (`/exit`).
-- The herdr skill is only used if the user mentions herdr, or if `CLAUDE.md` authorizes it (the delegation block does).
-- It must run inside herdr: `echo $HERDR_ENV` must print `1`.
-- If Claude does not see Engram, check `/mcp`; if it is missing, run `engram setup` or `gentle-ai install --agent claude-code`.
+- `CLAUDE.md` se carga al iniciar la sesión: después de editarlo, reinicia Claude Code (`/exit`).
+- La skill de herdr solo se usa si la persona menciona herdr o si `CLAUDE.md` la autoriza (el bloque de delegación lo hace).
+- Debe ejecutarse dentro de herdr: `echo $HERDR_ENV` debe imprimir `1`.
+- Si Claude no ve Engram, revisa `/mcp`; si no aparece, ejecuta `engram setup` o `gentle-ai install --agent claude-code`.
 
 ## Ollama / GPU
 
-- An empty `ollama ps` is not an error: it only lists models loaded at that moment.
-- If `ollama ps` shows something like `31%/69% CPU/GPU`, the model does not fit in VRAM. Check `nvidia-smi`: **voxtype** was using ~3 GB. Close it with `pkill voxtype`.
-- Do not start Ollama manually with `ollama serve`: it would look for models in `~/.ollama` (empty) and lose the override. Use `ollama-up` / `ollama-down`.
-- The system service runs as the `ollama` user and stores models in `/var/lib/ollama`. Do not switch it to your user (it conflicts with `ProtectHome`).
-- Right after restarting the service, `ollama` may say "could not connect": wait 2–3 seconds.
+- Que `ollama ps` no muestre resultados no es un error: solo enumera los modelos cargados en ese momento.
+- Si `ollama ps` muestra algo como `31%/69% CPU/GPU`, el modelo no cabe en la VRAM. Revisa `nvidia-smi`: **voxtype** estaba usando unos 3 GB. Ciérralo con `pkill voxtype`.
+- No inicies Ollama manualmente con `ollama serve`: buscaría modelos en `~/.ollama` (vacío) y perdería la configuración de override. Usa `ollama-up` / `ollama-down`.
+- El servicio del sistema se ejecuta como el usuario `ollama` y guarda los modelos en `/var/lib/ollama`. No lo cambies para ejecutarlo con tu usuario (entra en conflicto con `ProtectHome`).
+- Justo después de reiniciar el servicio, `ollama` puede mostrar "could not connect": espera 2–3 segundos.
 
 ## Bash
 
-- `!` inside double quotes triggers history expansion (`event not found`). Use single quotes.
-- `read -s VAR` types nothing visible; paste the key on the next line.
-- To copy a variable to the clipboard without printing it: `printf %s "$VAR" | wl-copy`.
+- `!` dentro de comillas dobles activa la expansión del historial (`event not found`). Usa comillas simples.
+- `read -s VAR` no muestra lo que escribes; pega la clave en la línea siguiente.
+- Para copiar una variable al portapapeles sin imprimirla: `printf %s "$VAR" | wl-copy`.
 
-## Security
+## Seguridad
 
-- Never paste keys into chats, screenshots or plain-text files. Provider → OmniRoute → password manager.
-- When rotating: get the new key working first, then revoke the old one.
+- Nunca pegues claves en chats, capturas de pantalla ni archivos de texto sin cifrar. Proveedor → OmniRoute → administrador de contraseñas.
+- Al rotar una clave, primero comprueba que la nueva funcione y luego revoca la anterior.

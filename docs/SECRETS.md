@@ -1,60 +1,62 @@
-# Secrets guide
+# Guía de secretos
 
-How secrets are handled and how to keep them out of git and out of the AI.
+**Español** · [English](SECRETS.en.md)
+
+Cómo se gestionan los secretos y cómo evitar que lleguen a git o a la IA.
 
 ---
 
-## Where secrets live
+## Dónde se guardan los secretos
 
-| Secret | Location | Notes |
-|-------|----------|-------|
+| Secreto | Ubicación | Notas |
+|---------|-----------|-------|
 | `OMNIROUTE_API_KEY` | `~/.config/secrets/ai.env` | `chmod 600` |
-| Provider API keys | OmniRoute (`~/.omniroute/.env` + `storage.sqlite`) | Backed up in an age-encrypted archive |
+| Claves de API de proveedores | OmniRoute (`~/.omniroute/.env` + `storage.sqlite`) | Se incluyen en un archivo cifrado con age |
 
-**Nothing is committed to git.** `.gitignore` already blocks `*.env`, `*.age`, `secrets/`, `*.sqlite`, and `*.db`.
-
----
-
-## Why they can't end up in git
-
-- `.gitignore` blocks `*.env` (but keeps `*.env.example`), `*.age`, `secrets/`, `*.sqlite`, and `*.db`
-- Configs reference env vars, never literal keys: Codex `env_key = "OMNIROUTE_API_KEY"`, OpenCode provider `{env:OMNIROUTE_API_KEY}`
-- The secrets file lives in `~/.config`, outside any repo
+**No se confirma nada en git.** `.gitignore` ya excluye `*.env`, `*.age`, `secrets/`, `*.sqlite` y `*.db`.
 
 ---
 
-## Avoid pasting keys in the wrong place
+## Por qué no pueden terminar en git
 
-- Never put a literal key in a tracked file, a prompt, a commit, or an issue
-- Always use the env/secrets file (`~/.config/secrets/ai.env`)
-- Always `chmod 600` the secrets file
-
----
-
-## Avoid secrets reaching the AI
-
-- Delegation sends your task + the code files the agent reads/edits, **not** your shell env or `~/.config/secrets/`
-- Never paste keys/tokens into a prompt
-- Don't ask an agent to read secret files, the age backup, or `~/.omniroute/.env`
-- OmniRoute injects provider keys server-side, so they are not in prompt content
+- `.gitignore` excluye `*.env` (pero conserva `*.env.example`), `*.age`, `secrets/`, `*.sqlite` y `*.db`.
+- Las configuraciones hacen referencia a variables de entorno, nunca a claves literales: Codex usa `env_key = "OMNIROUTE_API_KEY"`; el proveedor de OpenCode, `{env:OMNIROUTE_API_KEY}`.
+- El archivo de secretos está en `~/.config`, fuera de cualquier repositorio.
 
 ---
 
-## Extra hardening (optional)
+## Evita pegar claves en lugares equivocados
 
-- A pre-commit secret scanner (e.g. `gitleaks`)
-- GitHub secret scanning / push protection on your fork
-
----
-
-## If a key leaks
-
-- Rotate it at the provider immediately
-- If it was ever committed, rotating is required (git history keeps it)
+- Nunca incluyas una clave literal en un archivo bajo control de versiones, un prompt, una confirmación o un issue.
+- Usa siempre el archivo de entorno/secretos (`~/.config/secrets/ai.env`).
+- Ejecuta siempre `chmod 600` en el archivo de secretos.
 
 ---
 
-## See also
+## Evita que los secretos lleguen a la IA
 
-- [`SETUP.md`](SETUP.md) — install, rebuild, and verification
-- [`../SECURITY.md`](../SECURITY.md) — short policy / how to report a vulnerability
+- La delegación envía tu tarea y los archivos de código que el agente lee o edita, **no** el entorno de shell ni `~/.config/secrets/`.
+- Nunca pegues claves o tokens en un prompt.
+- No pidas a un agente que lea archivos de secretos, el respaldo de age ni `~/.omniroute/.env`.
+- OmniRoute inyecta las claves de proveedor en el servidor; por eso no forman parte del contenido de los prompts.
+
+---
+
+## Protección adicional (opcional)
+
+- Un detector de secretos pre-commit (por ejemplo, `gitleaks`).
+- Activar la detección de secretos y la protección contra subidas en GitHub para tu fork.
+
+---
+
+## Si se filtra una clave
+
+- Rótala de inmediato en el proveedor.
+- Si alguna vez se confirmó en git, es obligatorio rotarla (el historial de git conserva la clave).
+
+---
+
+## Ver también
+
+- [`SETUP.md`](SETUP.md) — instalación, reconstrucción y verificación.
+- [`../SECURITY.md`](../SECURITY.md) — política breve e instrucciones para informar una vulnerabilidad.
