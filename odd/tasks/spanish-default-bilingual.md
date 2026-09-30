@@ -49,8 +49,8 @@ all .md confirming each per-language target exists. Docs are passive under RDD.
 
 ## Slices (one branch, verify links only after all slices land)
 - [x] ES-A — root: README, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT (ES + .en.md). Bounded review fixes applied to contributor language guidance in both languages and the omitted `casta, color` protected characteristics in the Spanish Code of Conduct. Root pairs and switchers verified; final cross-document link validation remains deferred to ES-D.
-- [x] ES-B — docs onboarding: REQUIREMENTS, SETUP, COMPATIBILITY. See ES-B evidence below; three English links to ES-C files remain planned until those files are translated.
-- [ ] ES-C — docs deep: OMNIROUTE, CUSTOMIZATION, SECRETS, LESSONS.
+- [x] ES-B — docs onboarding: REQUIREMENTS, SETUP, COMPATIBILITY. See ES-B evidence below; its three English links to ES-C files were pending at the time and are now resolved.
+- [x] ES-C — docs deep: OMNIROUTE, CUSTOMIZATION, SECRETS, LESSONS. See ES-C evidence below.
 - [ ] ES-D — final link scan (every relative .md link resolves per language) +
       confirm switchers present + README front page renders in Spanish.
 
@@ -61,19 +61,19 @@ all .md confirming each per-language target exists. Docs are passive under RDD.
 - CHANGELOG stays English; code/scripts/comments stay English.
 
 ## Implementation route
-The bounded root review-fix task used the delegated route (writer trigger: two non-trivial documentation files). ES-B used delegated-direct writing (writer trigger: three non-trivial documentation files). TDD is not applicable to these passive documentation translations; no source tests apply.
+The bounded root review-fix task used the delegated route (writer trigger: two non-trivial documentation files). ES-B used delegated-direct writing (writer trigger: three non-trivial documentation files). ES-C used delegated-direct writing (writer trigger: four non-trivial documentation files). TDD is not applicable to these passive documentation translations; no source tests apply.
 
 ## Delivery strategy
 - Strategy: `feature-branch-chain` (user-delegated, 2026-09-30). Keep a no-merge tracker PR for the feature branch; review slices accumulate there and integrate only after all translations are complete because root-document links refer to documents that are still untranslated. Merge the tracker only after ES-D passes.
-- Forecast: **1,438 authored changed lines observed across ES-A and ES-B** (894 + 544). Revised full-feature forecast: approximately **2,000–2,200 authored changed lines**, adding an estimate for the remaining 298 lines of ES-C source prose and switcher/link rewiring. This is an estimate; validate each PR from its actual diff. The ~400-line PR budget guides slicing; it is not a reason to omit docs, shorten translations, or code-golf.
+- Observed source count: **2,040 authored changed lines across ES-A, ES-B, and ES-C** (894 + 544 + 602). This does not include any additional ES-D link rewiring. The ~400-line PR budget guides slicing; it is not a reason to omit docs, shorten translations, or code-golf.
 - Cohesive future PR slices (each target ≤400 authored changed lines; confirm against actual diffs before opening PRs):
   1. CONTRIBUTING + SECURITY, paired language files — 149 observed authored lines; target ≤400.
   2. CODE_OF_CONDUCT, paired language files — 267 observed authored lines; target ≤400.
   3. README, paired language files — 478 observed authored lines. This is the smallest coherent documentation unit after one honest split and exceeds the 400-line PR budget; do not code-golf. A standalone PR containing this commit requires a `size:exception` before creation.
   4. ES-B REQUIREMENTS + COMPATIBILITY — commit `01ca9db`, 232 observed authored lines; target ≤400.
   5. ES-B SETUP — commit `0fbece7`, 312 observed authored lines; target ≤400.
-  6. ES-C OMNIROUTE + CUSTOMIZATION (~185 source prose lines plus English link/switcher edits; target ≤400, confirm from actual diff).
-  7. ES-C LESSONS + SECRETS (~113 source prose lines plus English link/switcher edits; target ≤400, confirm from actual diff).
+  6. ES-C OMNIROUTE + CUSTOMIZATION — commit `30e6264`, 360 observed authored lines; target ≤400.
+  7. ES-C LESSONS + SECRETS — commit `b0e0e9e`, 242 observed authored lines; target ≤400.
 - Dependency/integration boundary: the slices may be reviewed in order on the feature-branch chain, but do not integrate them into the final target until every translation and the ES-D relative-link scan are complete. Keep the PR tracker draft/no-merge until then.
 
 ## ES-A evidence
@@ -88,8 +88,16 @@ The bounded root review-fix task used the delegated route (writer trigger: two n
 - `01ca9db` — REQUIREMENTS + COMPATIBILITY; 232 authored changed lines; native passive.
 - `0fbece7` — SETUP; 312 authored changed lines; native passive.
 - Verification passed: all three Spanish/English pairs exist with switchers immediately after titles; SETUP's nine fenced blocks and inline command/path/identifier inventory are preserved; Spanish/English link-language routing is correct; `git diff --check` and `git diff --cached --check` both passed.
-- Three English links intentionally await ES-C: `OMNIROUTE.en.md` from REQUIREMENTS, `OMNIROUTE.en.md` from SETUP, and `LESSONS.en.md` from SETUP. This partial check is not the full ES-D target-existence scan.
+- Three English links were intentionally pending ES-C: `OMNIROUTE.en.md` from REQUIREMENTS, `OMNIROUTE.en.md` from SETUP, and `LESSONS.en.md` from SETUP; ES-C added those targets. This partial check was not the full ES-D target-existence scan.
 - No PR exists; review-slice integration remains deferred until all translations and ES-D validation are complete.
 
+## ES-C evidence
+- Route: delegated direct; the writer trigger was four non-trivial source documents.
+- `30e6264` — OMNIROUTE + CUSTOMIZATION; 360 authored changed lines; native passive.
+- `b0e0e9e` — LESSONS + SECRETS; 242 authored changed lines; native passive.
+- Verification passed: all four Spanish/English pairs and switchers exist; technical identifiers, commands, code snippets, and security details were preserved; Spanish/English link routing is correct; all relative targets referenced by the eight ES-C docs exist; `git diff --check` and `git diff --cached --check` passed.
+- The full repository-wide relative-link scan, switcher inventory, and README front-page check remain ES-D.
+- No PR or push is authorized. README commit `a3974ac` remains a 478-line cohesive slice and requires an explicit `size:exception` before any standalone PR containing it.
+
 ## Next step
-ES-C — docs deep: OMNIROUTE, CUSTOMIZATION, SECRETS, LESSONS. Final link validation remains deferred to ES-D.
+ES-D — scan every relative Markdown link per language, confirm every switcher, and verify that the README front page renders in Spanish.
