@@ -10,6 +10,10 @@
 
 ![Claude Code](https://img.shields.io/badge/Claude_Code-brain-d97757?style=for-the-badge&logo=claude&logoColor=white) ![OpenCode](https://img.shields.io/badge/OpenCode-agents-0d1117?style=for-the-badge) ![Ollama](https://img.shields.io/badge/Ollama-qwen3:14b-ec4899?style=for-the-badge&logo=ollama&logoColor=white) ![Omarchy](https://img.shields.io/badge/Omarchy-Arch_+_Hyprland-1793d1?style=for-the-badge&logo=archlinux&logoColor=white)
 
+[![Release](https://img.shields.io/github/v/release/elvinlab/agentic-dev-setup?color=8b5cf6)](https://github.com/elvinlab/agentic-dev-setup/releases) [![CI](https://github.com/elvinlab/agentic-dev-setup/actions/workflows/ci.yml/badge.svg)](https://github.com/elvinlab/agentic-dev-setup/actions/workflows/ci.yml) [![Licencia](https://img.shields.io/github/license/elvinlab/agentic-dev-setup?color=06b6d4)](LICENSE) [![Estrellas](https://img.shields.io/github/stars/elvinlab/agentic-dev-setup?color=ec4899)](https://github.com/elvinlab/agentic-dev-setup/stargazers)
+
+![Proveedores](https://img.shields.io/badge/proveedores-5-8b5cf6?style=flat-square) ![Combos](https://img.shields.io/badge/combos-3-8b5cf6?style=flat-square) ![Costo](https://img.shields.io/badge/costo-US%2420%2Fmes-06b6d4?style=flat-square) ![Delegado](https://img.shields.io/badge/delegado-US%240-ec4899?style=flat-square) ![Contexto](https://img.shields.io/badge/contexto-16k-06b6d4?style=flat-square) ![GPU](https://img.shields.io/badge/GPU-RTX_3060_12GB-8b5cf6?style=flat-square)
+
 </div>
 
 Este es el entorno en el que programo cada día —y honestamente, lo que más orgulloso estoy de haber construido.
