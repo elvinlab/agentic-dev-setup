@@ -51,6 +51,8 @@ for example in "$REPO/home/.config/agent-routing/"*.env.example; do
 done
 [ -L "$HOME/.config/agent-routing/active.env" ] || ln -sf cloud.env "$HOME/.config/agent-routing/active.env"
 cp "$REPO/home/.bashrc.d/ai.sh" "$HOME/.bashrc.d/ai.sh"
+install -m 755 "$REPO/home/.config/agent-routing/restore.sh" "$HOME/.config/agent-routing/restore.sh"
+echo "✔ restore.sh installed (run it AFTER Gentle AI: bash ~/.config/agent-routing/restore.sh)"
 
 LOADER='for f in ~/.bashrc.d/*.sh; do [ -r "$f" ] && . "$f"; done'
 grep -qF "$LOADER" "$HOME/.bashrc" || printf '\n# Personal modules\n%s\n' "$LOADER" >> "$HOME/.bashrc"
@@ -85,3 +87,4 @@ else
 fi
 
 step "Done. Continue with docs/SETUP.md: restore data, Gentle AI and apply-patches.sh"
+echo "   Then run: bash ~/.config/agent-routing/restore.sh  (caveman + RTK hooks, Gentleman style, opencode permission ceiling)"

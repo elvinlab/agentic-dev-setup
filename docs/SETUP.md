@@ -82,13 +82,21 @@ Your own `~/.codex` config and auth are never touched. If a profile or launcher 
 
 Codex shares Engram and `~/.config/agent-routing/active.env` with Claude Code, so `agent-profile cloud|local` switches both brains, and Codex delegates trivial and bounded work to OpenCode with the same tiers.
 
-### 6. herdr skill for Claude Code
+### 6. Restore Claude Code hooks and the opencode permission ceiling
+
+```bash
+bash ~/.config/agent-routing/restore.sh
+```
+
+Re-applies the Gentleman output style, the caveman ULTRA SessionStart hook, the RTK PreToolUse hook (Bash output compaction), and the opencode autonomous permission ceiling (broad-safe: edit/bash/test allowed; push, deploy wrangler/pnpm, gh pr merge/release/auth, rm -rf, ssh/scp/rsync denied) into `~/.claude/settings.json` and `~/.config/opencode/opencode.json`. It is idempotent and **must run after step 4 (Gentle AI)** because it patches `~/.claude/settings.json` (errors if that file is missing).
+
+### 7. herdr skill for Claude Code
 
 ```bash
 npx skills add herdrdev/herdr --skill herdr -g
 ```
 
-### 7. Open a new terminal
+### 8. Open a new terminal
 
 So it loads `~/.bashrc.d/ai.sh` and your secrets.
 
@@ -109,6 +117,7 @@ ollama run qwen3:14b "hello" && ollama ps   # → 100% GPU, context 16384
 # OpenCode
 echo ${#OMNIROUTE_API_KEY}                  # → number > 0
 opencode models omniroute                   # → elvinlabCode, elvinlabFast, elvinlabLocal
+jq -e ".permission.bash" ~/.config/opencode/opencode.json >/dev/null && echo "opencode permission ceiling present"
 
 # Delegation
 agent-profile                               # → Active: cloud
