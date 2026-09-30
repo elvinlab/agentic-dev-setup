@@ -99,5 +99,18 @@ forever. Decisions taken with the user:
   Deferred advisories: curl|sh installer risk (inherent), eval install-cmd
   string, dnf update parity — documented, not blocking.
 
-## Next step
-CPU-4: docs (README.md + docs/SETUP.md) — delegate to elvinlabCode.
+## Status: COMPLETE (on branch feat/cross-platform-usability)
+Commits:
+- e63b67d feat(bootstrap): multi-distro detection — reviewed, approved, acked.
+- 9f70c82 fix(bootstrap): apt update + idempotency + WSL msg — reviewed, acked.
+- d931f20 docs: multi-distro + WSL2 — assessed passive (no review due).
+
+All checks green: tests/test-distro.sh 16/16, shellcheck clean, `bash -n` OK,
+existing codex tests pass, doc WSL2 content + relative links verified.
+
+Delivery (push / PR) remains the user's decision under ordinary repo policy.
+
+## Future work (out of this feature's scope)
+- Spanish `README.es.md` + `docs/*.es.md` (separate-files structure, agreed).
+- Deferred non-blocking advisories: curl|sh installer risk, eval install-cmd
+  string, dnf/apt update parity refinements.
