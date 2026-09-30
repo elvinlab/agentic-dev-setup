@@ -1,79 +1,79 @@
-# Requirements
+# Requisitos
 
-What you need before starting — accounts, hardware, OS, software, and knowledge. No surprises, no hidden costs.
+**Español** · [English](REQUIREMENTS.en.md)
 
----
-
-## 💰 What it costs
-
-**The ONLY paid thing is Claude Pro: US$20/month.**
-
-Claude Code runs by logging in with that subscription — **no Anthropic API key, no usage billing**. Everything else is free: cloud providers are free tiers, the local model is free/open-source, and every tool is free/open-source.
-
-**Why this architecture:** Claude Pro has usage limits. This environment delegates trivial and bounded work to free models (through OmniRoute + OpenCode) and keeps Claude's limited premium capacity for the hard, high-value work. That is the whole point.
+Lo que necesitas antes de comenzar: cuentas, hardware, sistema operativo, software y conocimientos. Sin sorpresas ni costos ocultos.
 
 ---
 
-## 🔑 Accounts you need
+## 💰 Costos
 
-| Account | Cost | Why | Where |
-|---------|------|-----|-------|
-| **Claude Pro** | US$20/mo | Run Claude Code (the main brain) | [claude.ai](https://claude.ai) |
-| **GitHub** | free | Clone this repo (and push your own fork) | [github.com](https://github.com) |
-| **NVIDIA NIM** | free dev tier | Cloud model provider | [build.nvidia.com](https://build.nvidia.com) |
-| **Mistral** | free tier (phone verification) | Cloud model provider | [console.mistral.ai](https://console.mistral.ai) |
-| **Google AI Studio** | free (never enable billing) | Cloud model provider | [aistudio.google.com](https://aistudio.google.com) |
-| **Groq** | free tier | Cloud model provider | [console.groq.com](https://console.groq.com) |
+**Lo ÚNICO de pago es Claude Pro: US$20 al mes.**
 
-**Notes:**
-- **NO OpenAI/ChatGPT account is needed:** Codex (the optional peer brain) routes through the local OmniRoute gateway, not OpenAI.
-- **OmniRoute runs locally** (self-hosted, no account); you set a local dashboard password.
-- For the exact provider key setup and combos, see [`OMNIROUTE.md`](OMNIROUTE.md).
+Claude Code funciona iniciando sesión con esa suscripción: **no necesitas una clave de API de Anthropic ni pagas por uso**. Todo lo demás es gratis: los proveedores en la nube tienen niveles gratuitos, el modelo local es gratuito y de código abierto, y todas las herramientas son gratuitas y de código abierto.
+
+**Por qué esta arquitectura:** Claude Pro tiene límites de uso. Este entorno delega el trabajo trivial y acotado a modelos gratuitos (mediante OmniRoute + OpenCode) y reserva la capacidad premium limitada de Claude para el trabajo difícil y de alto valor. Ese es el objetivo.
+
+---
+
+## 🔑 Cuentas necesarias
+
+| Cuenta | Costo | Motivo | Sitio |
+|--------|-------|--------|-------|
+| **Claude Pro** | US$20/mes | Ejecutar Claude Code (el cerebro principal) | [claude.ai](https://claude.ai) |
+| **GitHub** | gratis | Clonar este repositorio (y subir tu propio fork) | [github.com](https://github.com) |
+| **NVIDIA NIM** | nivel gratuito para desarrolladores | Proveedor de modelos en la nube | [build.nvidia.com](https://build.nvidia.com) |
+| **Mistral** | nivel gratuito (verificación telefónica) | Proveedor de modelos en la nube | [console.mistral.ai](https://console.mistral.ai) |
+| **Google AI Studio** | gratis (nunca habilites la facturación) | Proveedor de modelos en la nube | [aistudio.google.com](https://aistudio.google.com) |
+| **Groq** | nivel gratuito | Proveedor de modelos en la nube | [console.groq.com](https://console.groq.com) |
+
+**Notas:**
+- **NO necesitas una cuenta de OpenAI/ChatGPT:** Codex (el cerebro par opcional) se enruta mediante la puerta de enlace local OmniRoute, no mediante OpenAI.
+- **OmniRoute se ejecuta localmente** (autohospedado, sin cuenta); debes establecer una contraseña para el panel local.
+- Para conocer la configuración exacta de las claves de proveedor y las combinaciones, consulta [`OMNIROUTE.md`](OMNIROUTE.md).
 
 ---
 
 ## 🖥 Hardware
 
-**Reference machine (tested on):** AMD Ryzen 5 5600X, NVIDIA GeForce RTX 3060 12 GB. (See [README's "My workstation"](../README.md#-my-workstation) table.)
+**Equipo de referencia (probado):** AMD Ryzen 5 5600X, NVIDIA GeForce RTX 3060 de 12 GB. (Consulta la tabla [«Mi estación de trabajo» del README](../README.md#-my-workstation)).
 
-**Generalize:** Any x86_64 Linux machine. An NVIDIA GPU is recommended to run the local model; ~12 GB VRAM fits `qwen3:14b` at 16k context. With less VRAM, use a smaller model or shorter context. With no NVIDIA GPU, the local model runs on CPU (much slower) and you can lean on the free cloud combos instead.
+**Generalización:** cualquier equipo Linux x86_64. Se recomienda una GPU NVIDIA para ejecutar el modelo local; unos 12 GB de VRAM permiten usar `qwen3:14b` con un contexto de 16k. Con menos VRAM, usa un modelo más pequeño o un contexto más corto. Sin GPU NVIDIA, el modelo local funciona en la CPU (mucho más lento) y puedes apoyarte en las combinaciones gratuitas en la nube.
 
-**Disk:** Enough for the Ollama model (`qwen3:14b` is ~9 GB) plus the tools.
+**Disco:** espacio suficiente para el modelo de Ollama (`qwen3:14b` ocupa unos 9 GB), además de las herramientas.
 
-**RAM:** A few GB of free RAM (no specific requirement known).
+**RAM:** unos cuantos GB de RAM libre (no se conoce un requisito específico).
 
 ---
 
-## 🐧 Operating system
+## 🐧 Sistema operativo
 
-The author's machine is Omarchy 4 (Arch + Hyprland), but it is **NOT required**.
+El equipo del autor usa Omarchy 4 (Arch + Hyprland), pero **NO es un requisito**.
 
-**Supported:** Arch, Debian/Ubuntu, Fedora, or Windows via WSL2.
+**Sistemas compatibles:** Arch, Debian/Ubuntu, Fedora o Windows mediante WSL2.
 
-For install details and the Windows/WSL2 path, see [`SETUP.md`](SETUP.md).
+Para los detalles de instalación y el procedimiento para Windows/WSL2, consulta [`SETUP.md`](SETUP.md).
 
 ---
 
 ## 🧰 Software
 
-**Installed by `bootstrap.sh`:** git, jq, age, sqlite, Node LTS (via mise), Ollama.
+**Instalado por `bootstrap.sh`:** git, jq, age, sqlite, Node LTS (mediante mise), Ollama.
 
-**Installed manually** (per their official docs): **Claude Code**, **Gentle AI** (which also installs Engram), **herdr**, **OmniRoute** (npm), and optionally **Codex** (peer).
+**Instalado manualmente** (según la documentación oficial correspondiente): **Claude Code**, **Gentle AI** (que también instala Engram), **herdr**, **OmniRoute** (npm) y, opcionalmente, **Codex** (par).
 
-The exact tested versions live in the "Versions this setup was tested with" section of the [README](../README.md).
-
----
-
-## 🧠 What you should already know
-
-- Comfortable in a terminal and with basic bash.
-- Basic git (clone, branch, commit).
-- Basic tmux or terminal panes (you run OmniRoute, Ollama and the agents side by side).
-- Comfortable editing config files (env, JSON, TOML).
-- A basic mental model of LLM agents and API keys, and how a gateway/proxy routes a request to different providers.
-- Understanding that free models can be wrong, so a human reviews the output.
-- **NOT required:** machine-learning or model-training knowledge.
+Las versiones exactas probadas se encuentran en la sección «Versions this setup was tested with» del [README](../README.md).
 
 ---
 
-Ready to start? See [`SETUP.md`](SETUP.md) for the bootstrap and install steps.
+## 🧠 Conocimientos previos
+
+- Comodidad usando una terminal y conocimientos básicos de bash.
+- Conocimientos básicos de git (clonar, crear ramas y confirmar cambios).
+- Conocimientos básicos de tmux o de los paneles de una terminal (OmniRoute, Ollama y los agentes se ejecutan en paralelo).
+- Comodidad editando archivos de configuración (env, JSON, TOML).
+- Un modelo mental básico de los agentes LLM y las claves de API, y de cómo una puerta de enlace o un proxy enruta solicitudes a distintos proveedores.
+- Comprender que los modelos gratuitos pueden equivocarse y que una persona debe revisar sus resultados.
+- **NO se requieren:** conocimientos de aprendizaje automático ni de entrenamiento de modelos.
+
+¿Listo para comenzar? Consulta [`SETUP.md`](SETUP.md) para ver los pasos de preparación e instalación.

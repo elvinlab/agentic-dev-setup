@@ -1,27 +1,29 @@
-# Compatibility matrix
+# Matriz de compatibilidad
 
-This document tracks where the agentic-dev-setup has been confirmed to work. Reports are welcome — open a **Setup report** issue (see the repository's Issues area) with your distro and GPU result.
+**Español** · [English](COMPATIBILITY.en.md)
 
-| OS / Distro | Package manager | GPU | Status |
-|-------------|-----------------|-----|--------|
-| Omarchy 4 (Arch Linux) | pacman | NVIDIA RTX 3060 12 GB | ✅ Tested (reference machine) |
-| Arch Linux | pacman | — | 🟡 Should work — reports welcome |
-| Debian / Ubuntu | apt | — | 🟡 Should work — reports welcome |
-| Fedora | dnf | — | 🟡 Should work — reports welcome |
-| Windows (WSL2 + Ubuntu) | apt | — | 🟡 Should work — reports welcome |
+Este documento registra en qué entornos se ha confirmado que funciona agentic-dev-setup. Aceptamos reportes: abre un issue de **reporte de instalación** (Setup report; consulta la sección Issues del repositorio) e indica tu distribución y el resultado con la GPU.
 
-## Legend
+| SO / distribución | Gestor de paquetes | GPU | Estado |
+|-------------------|--------------------|-----|--------|
+| Omarchy 4 (Arch Linux) | pacman | NVIDIA RTX 3060 12 GB | ✅ Probado (equipo de referencia) |
+| Arch Linux | pacman | — | 🟡 Debería funcionar — se agradecen reportes |
+| Debian / Ubuntu | apt | — | 🟡 Debería funcionar — se agradecen reportes |
+| Fedora | dnf | — | 🟡 Debería funcionar — se agradecen reportes |
+| Windows (WSL2 + Ubuntu) | apt | — | 🟡 Debería funcionar — se agradecen reportes |
 
-- ✅ **Tested** — confirmed working on the author's reference machine
-- 🟡 **Should work / unconfirmed** — bootstrap supports the package manager; no test report yet
+## Leyenda
 
-## Add your result
+- ✅ **Probado** — confirmado en el equipo de referencia del autor
+- 🟡 **Debería funcionar / sin confirmar** — el proceso de bootstrap es compatible con el gestor de paquetes; aún no hay reportes de pruebas
 
-Open a **Setup report** issue (see the repository's Issues) with:
+## Agregar tu resultado
 
-- Your distro and version
-- GPU (model and VRAM, or "none")
-- Whether bootstrap completed and delegation works
-- Any workaround needed
+Abre un issue de **reporte de instalación** (Setup report; consulta la sección Issues del repositorio) e incluye:
 
-See also [`CONTRIBUTING.md`](../CONTRIBUTING.md) and [`SETUP.md`](SETUP.md) for context on bootstrap and WSL2.
+- Tu distribución y su versión
+- GPU (modelo y VRAM, o «ninguna»)
+- Si se completó el proceso de bootstrap y funciona la delegación
+- Cualquier solución alternativa necesaria
+
+Consulta también [`CONTRIBUTING.md`](../CONTRIBUTING.md) y [`SETUP.md`](SETUP.md) para obtener contexto sobre bootstrap y WSL2.
