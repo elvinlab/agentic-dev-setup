@@ -57,5 +57,12 @@ one-step re-application: chain restore.sh into apply-patches.sh.
 - apply-patches.sh triggers restore.sh; a missing settings.json only warns.
 - Docs explain one-step re-application after gentle-ai and its honest limit.
 
-## Next step
-HOH-1: edit restore.sh.
+## Status: COMPLETE (branch feat/routing-hook-in-restore)
+- 032f2c4: routing hook + apply-patches chaining + docs. Native review APPROVED +
+  acknowledged (lineage review-9c817a0c24a37bed; 8 advisories non-blocking).
+- Advisory fixes applied on top: apply-patches now runs the REPO copy of
+  restore.sh (was preferring a possibly-stale installed copy — real WARNING), and
+  the guard warning is generic (no longer misattributes the cause). Left for
+  consistency with pre-existing 2b/2c: the `jq && mv` + echo pattern.
+
+Delivery (merge/push) is the user's decision.
