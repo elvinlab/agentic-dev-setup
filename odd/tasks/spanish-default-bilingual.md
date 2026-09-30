@@ -51,7 +51,7 @@ all .md confirming each per-language target exists. Docs are passive under RDD.
 - [x] ES-A — root: README, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT (ES + .en.md). Bounded review fixes applied to contributor language guidance in both languages and the omitted `casta, color` protected characteristics in the Spanish Code of Conduct. Root pairs and switchers verified; final cross-document link validation remains deferred to ES-D.
 - [x] ES-B — docs onboarding: REQUIREMENTS, SETUP, COMPATIBILITY. See ES-B evidence below; its three English links to ES-C files were pending at the time and are now resolved.
 - [x] ES-C — docs deep: OMNIROUTE, CUSTOMIZATION, SECRETS, LESSONS. See ES-C evidence below.
-- [ ] ES-D — final link scan (every relative .md link resolves per language) +
+- [x] ES-D — final link scan (every relative .md link resolves per language) +
       confirm switchers present + README front page renders in Spanish.
 
 ## Acceptance criteria
@@ -61,11 +61,11 @@ all .md confirming each per-language target exists. Docs are passive under RDD.
 - CHANGELOG stays English; code/scripts/comments stay English.
 
 ## Implementation route
-The bounded root review-fix task used the delegated route (writer trigger: two non-trivial documentation files). ES-B used delegated-direct writing (writer trigger: three non-trivial documentation files). ES-C used delegated-direct writing (writer trigger: four non-trivial documentation files). TDD is not applicable to these passive documentation translations; no source tests apply.
+The bounded root review-fix task used the delegated route (writer trigger: two non-trivial documentation files). ES-B used delegated-direct writing (writer trigger: three non-trivial documentation files). ES-C used delegated-direct writing (writer trigger: four non-trivial documentation files). ES-D used independent read-only verification, followed by two narrowly scoped passive documentation corrections. TDD is not applicable to these passive documentation translations; no source tests apply.
 
 ## Delivery strategy
 - Strategy: `feature-branch-chain` (user-delegated, 2026-09-30). Keep a no-merge tracker PR for the feature branch; review slices accumulate there and integrate only after all translations are complete because root-document links refer to documents that are still untranslated. Merge the tracker only after ES-D passes.
-- Observed source count: **2,040 authored changed lines across ES-A, ES-B, and ES-C** (894 + 544 + 602). This does not include any additional ES-D link rewiring. The ~400-line PR budget guides slicing; it is not a reason to omit docs, shorten translations, or code-golf.
+- Observed source count: **2,044 authored changed lines across ES-A, ES-B, ES-C, and ES-D corrections** (2,040 + 2 + 2). The ~400-line PR budget guides slicing; it is not a reason to omit docs, shorten translations, or code-golf.
 - Cohesive future PR slices (each target ≤400 authored changed lines; confirm against actual diffs before opening PRs):
   1. CONTRIBUTING + SECURITY, paired language files — 149 observed authored lines; target ≤400.
   2. CODE_OF_CONDUCT, paired language files — 267 observed authored lines; target ≤400.
@@ -96,8 +96,17 @@ The bounded root review-fix task used the delegated route (writer trigger: two n
 - `30e6264` — OMNIROUTE + CUSTOMIZATION; 360 authored changed lines; native passive.
 - `b0e0e9e` — LESSONS + SECRETS; 242 authored changed lines; native passive.
 - Verification passed: all four Spanish/English pairs and switchers exist; technical identifiers, commands, code snippets, and security details were preserved; Spanish/English link routing is correct; all relative targets referenced by the eight ES-C docs exist; `git diff --check` and `git diff --cached --check` passed.
-- The full repository-wide relative-link scan, switcher inventory, and README front-page check remain ES-D.
+- At ES-C completion, the full repository-wide relative-link scan, switcher inventory, and README front-page check were still pending; ES-D completion is recorded below.
 - No PR or push is authorized. README commit `a3974ac` remains a 478-line cohesive slice and requires an explicit `size:exception` before any standalone PR containing it.
 
+## ES-D evidence
+- Independent verifier scanned 39 repository Markdown files, 110 rendered local destinations, and 2 fragments. All 11 Spanish/English pairs and switchers passed; there were zero missing targets, broken fragments, or wrong-language links.
+- `README.md` is a substantive Spanish front page; `README.en.md` is English. `CHANGELOG.md`, code, and scripts remain unchanged.
+- Semantic comparison of all seven `docs/` language pairs found no material technical or safety mismatch; all 12 fenced blocks matched byte-for-byte.
+- `099ceea` — removed the stale English anchor from the Spanish REQUIREMENTS → README link; 2 authored changed lines; native passive.
+- `b27a236` — aligned the Spanish REQUIREMENTS section label with the Spanish README heading; 2 authored changed lines; native passive.
+- At verified source HEAD `b27a236`, `git status --short` was clean before this tracker-only update; `git show --check` passed for both correction commits.
+- Local feature verification is complete. No push, PR, or merge was authorized, and no remote credentials or sessions were authorized. The 478-line README slice still requires explicit `size:exception` approval before standalone PR creation.
+
 ## Next step
-ES-D — scan every relative Markdown link per language, confirm every switcher, and verify that the README front page renders in Spanish.
+Local feature work is complete. Await separate user authorization for any remote delivery; preserve the no-PR/no-push/no-merge boundary and obtain `size:exception` approval before a standalone PR containing the README slice.
