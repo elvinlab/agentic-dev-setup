@@ -86,7 +86,7 @@ gentle-ai install --agent claude-code,opencode
 ./scripts/apply-patches.sh
 ```
 
-Adds the OmniRoute provider to OpenCode and the delegation block to `CLAUDE.md` without overwriting Gentle AI's configuration. Safe to rerun after every `gentle-ai install`.
+Adds the OmniRoute provider to OpenCode and the delegation block to `CLAUDE.md` without overwriting Gentle AI's configuration. Safe to rerun after every `gentle-ai install`. It also runs `restore.sh` (step 6) at the end, so a single refresh after any Gentle AI install/update re-applies the output style and all the hooks in one step.
 
 It also sets up **Codex** as an independent peer orchestrator (a fallback brain next to Claude Code, not a delegated agent):
 
@@ -100,11 +100,16 @@ Codex shares Engram and `~/.config/agent-routing/active.env` with Claude Code, s
 
 ### 6. Restore Claude Code hooks and the opencode permission ceiling
 
+Step 5 already runs this for you. Run it standalone only if you want to refresh
+the settings without reapplying the other patches:
+
 ```bash
 bash ~/.config/agent-routing/restore.sh
 ```
 
-Re-applies the Gentleman output style, the caveman ULTRA SessionStart hook, the RTK PreToolUse hook (Bash output compaction), and the opencode autonomous permission ceiling (broad-safe: edit/bash/test allowed; push, deploy wrangler/pnpm, gh pr merge/release/auth, rm -rf, ssh/scp/rsync denied) into `~/.claude/settings.json` and `~/.config/opencode/opencode.json`. It is idempotent and **must run after step 4 (Gentle AI)** because it patches `~/.claude/settings.json` (errors if that file is missing).
+Re-applies the Gentleman output style, the caveman ULTRA SessionStart hook, the RTK PreToolUse hook (Bash output compaction), the herdr tier-routing UserPromptSubmit hook (injects the active `TIER1_MODEL`/`TIER2_MODEL` so the routing reminder fires in every chat and repo), and the opencode autonomous permission ceiling (broad-safe: edit/bash/test allowed; push, deploy wrangler/pnpm, gh pr merge/release/auth, rm -rf, ssh/scp/rsync denied) into `~/.claude/settings.json` and `~/.config/opencode/opencode.json`. It is idempotent and **must run after step 4 (Gentle AI)** because it patches `~/.claude/settings.json` (errors if that file is missing).
+
+> **Why re-apply instead of "set once"?** Gentle AI owns `~/.claude/settings.json` and can overwrite these on a reinstall/update, so they cannot be made immune — they are re-applied. Because `apply-patches.sh` runs `restore.sh`, rerunning `./scripts/apply-patches.sh` after any Gentle AI install/update restores all of them in one step.
 
 ### 7. herdr skill for Claude Code
 

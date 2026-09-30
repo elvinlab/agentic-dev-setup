@@ -44,4 +44,12 @@ else
   echo "✘ $AG does not exist — install Codex first, then rerun"
 fi
 
+# 4) Re-apply the orchestrator settings gentle-ai can clobber (idempotent):
+#    Gentleman style, caveman SessionStart hook, RTK PreToolUse hook, the herdr
+#    tier-routing UserPromptSubmit hook, and the opencode permission ceiling.
+#    Guarded so a missing settings.json only warns instead of failing the patch.
+RESTORE="$HOME/.config/agent-routing/restore.sh"
+[ -f "$RESTORE" ] || RESTORE="$REPO/home/.config/agent-routing/restore.sh"
+bash "$RESTORE" || echo "⚠ restore.sh reported an issue (see above); rerun it after 'gentle-ai install' if settings.json was missing"
+
 echo "Restart Claude Code, Codex and OpenCode so they load the changes."

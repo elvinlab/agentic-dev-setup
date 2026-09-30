@@ -5,8 +5,13 @@
 # overwrite the caveman SessionStart hook and the outputStyle on a full reinstall.
 # This script re-applies everything that lives outside gentle-ai's control, plus the
 # settings.json values gentle-ai can clobber (outputStyle, the caveman SessionStart
-# hook, and the RTK PreToolUse hook). It is IDEMPOTENT: safe to run any
-# time; it only changes what is missing or wrong and backs up settings.json first.
+# hook, the RTK PreToolUse hook, and the herdr tier-routing UserPromptSubmit hook).
+# It is IDEMPOTENT: safe to run any time; it only changes what is missing or wrong
+# and backs up settings.json first.
+#
+# Note: gentle-ai owns settings.json, so these cannot be made immune to an
+# overwrite; they are RE-APPLIED. apply-patches.sh runs this script, so a refresh
+# after any gentle-ai install/update restores them in one step.
 #
 # Usage:  bash ~/.config/agent-routing/restore.sh
 set -euo pipefail
@@ -70,6 +75,21 @@ else
   jq '.hooks.PreToolUse += [ { "hooks":[ {"command":"rtk hook claude","type":"command"} ], "matcher":"Bash" } ]' \
     "$SETTINGS" > "$SETTINGS.tmp" && mv "$SETTINGS.tmp" "$SETTINGS"
   echo "[restore] rtk hook re-added"
+fi
+
+# 2d) Ensure the herdr tier-routing UserPromptSubmit hook is present (add only if missing).
+# It sources active.env at prompt time and injects the current TIER1/TIER2 models,
+# so the routing reminder applies in every chat and repo, even brand-new ones.
+if grep -q 'ROUTING CHECK (herdr)' "$SETTINGS"; then
+  echo "[restore] routing hook present"
+else
+  # The $VARS below must stay literal: they are evaluated when the hook runs, not now.
+  # shellcheck disable=SC2016
+  ROUTING_CMD='f="$HOME/.config/agent-routing/active.env"; [ -f "$f" ] && . "$f" 2>/dev/null; jq -cn --arg t1 "${TIER1_MODEL:-default}" --arg t2 "${TIER2_MODEL:-default}" '\''{hookSpecificOutput:{hookEventName:"UserPromptSubmit",additionalContext:("ROUTING CHECK (herdr): before implementing, state the tier (1/2/3) and whether you delegate to opencode. Tier1=" + $t1 + " Tier2=" + $t2 + ". Tier2 covers tests/docs/boilerplate/simple components/spec-refactors -> delegate via opencode -m <model>. Going inline requires a one-line justification (e.g. true one-liner cheaper than briefing).")}}'\'''
+  jq --arg cmd "$ROUTING_CMD" \
+    '.hooks.UserPromptSubmit += [ { "matcher":"", "hooks":[ {"type":"command","command":$cmd,"timeout":10} ] } ]' \
+    "$SETTINGS" > "$SETTINGS.tmp" && mv "$SETTINGS.tmp" "$SETTINGS"
+  echo "[restore] routing hook re-added"
 fi
 
 # 3) Caveman skill files (independent of gentle-ai; cannot be regenerated here).
