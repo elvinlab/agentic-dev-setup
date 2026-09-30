@@ -94,6 +94,7 @@ else
   jq '.permission = {
       "read":"allow","list":"allow","glob":"allow","grep":"allow",
       "edit":"allow","webfetch":"allow","websearch":"allow",
+      "external_directory":{"~/Projects/**":"allow"},
       "bash":{
         "*":"allow",
         "git push*":"deny","git push":"deny",
