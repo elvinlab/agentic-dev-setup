@@ -24,6 +24,17 @@ When Claude Code is unavailable, **Codex** steps in as a second, independent orc
 
 The result: frontier-level judgment where it matters, **$0 for the delegated work**, and a pipeline that keeps working even when every cloud quota runs out.
 
+## 🎓 Who this is for
+
+Built for **university students** who want to ship **personal projects** with AI agents but **can't (or don't want to) pay for an ultra-expensive subscription**.
+
+- 💸 **Student budget** — a single US$20/month subscription; delegated work runs on free tiers and your own GPU.
+- 🧭 **Learn the architecture, not just the tool** — see how work is split between one premium model and cheaper ones.
+- 🔧 **Reproducible on your machine** — idempotent scripts; no high-end rig needed (a 12 GB GPU is enough for the local AI).
+
+> [!NOTE]
+> **Model transparency:** this repository is developed and tested with **Claude Sonnet at medium effort** — not the largest model, and not maximum reasoning. That is deliberate: it shows a mid-tier model, well orchestrated, is enough for real projects without overspending.
+
 ## ✨ Highlights
 
 - 💵 **$20/month, total** — one Claude Pro subscription; every other model and tool is free-tier or open-source.
