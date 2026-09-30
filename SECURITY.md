@@ -1,30 +1,32 @@
-# Security policy
+# Política de seguridad
 
-## Reporting a vulnerability
+**Español** · [English](SECURITY.en.md)
 
-Use GitHub's private vulnerability reporting:
+## Reporte de una vulnerabilidad
 
-1. Go to the repository's **Security** tab.
-2. Click **Report a vulnerability** (GitHub Security Advisories).
-3. Fill in the details and submit privately.
+Use el reporte privado de vulnerabilidades de GitHub:
 
-**Do not open a public issue** for security problems.
+1. Vaya a la pestaña **Security** del repositorio.
+2. Haga clic en **Report a vulnerability** (GitHub Security Advisories).
+3. Complete los detalles y envíe de forma privada.
 
-This repository does not accept security reports by email.
+**No abra un issue público** para problemas de seguridad.
 
-## Supported versions
+Este repositorio no acepta reportes de seguridad por correo electrónico.
 
-| Version | Status |
+## Versiones soportadas
+
+| Versión | Estado |
 |---------|--------|
-| 1.0.0 (`main`) | ✅ Supported |
-| Older | ❌ Not supported |
+| 1.0.0 (`main`) | ✅ Soportada |
+| Anteriores | ❌ No soportadas |
 
-Only the latest release on the default branch receives security updates.
+Solo la última versión en la rama por defecto recibe actualizaciones de seguridad.
 
-## Secrets handling
+## Manejo de secretos
 
-This is a personal dotfile repository. **No secrets are committed to git.**
+Este es un repositorio personal de dotfiles. **No se cometen secretos a git.**
 
-- Provider API keys and sensitive configuration live in environment variables.
-- Secrets and agent memory are backed up in an `age`-encrypted archive (see [`docs/SETUP.md`](docs/SETUP.md)).
-- The OmniRoute gateway binds to `127.0.0.1` only and requires an API key.
+- Las claves API de proveedores y configuración sensible viven en variables de entorno.
+- Los secretos y la memoria de agentes se respaldan en un archivo encriptado con `age` (consulte [`docs/SETUP.md`](docs/SETUP.md)).
+- La puerta de enlace OmniRoute se enlaza solo a `127.0.0.1` y requiere clave API.

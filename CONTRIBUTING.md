@@ -1,17 +1,19 @@
-# Contributing
+# Contribuir
 
-This is a personal dotfile and showcase repository. Others are welcome to reproduce it, but it reflects a specific workflow and hardware setup. Contributions and setup reports are welcome; opinionated or out-of-scope changes may be declined.
+**Español** · [English](CONTRIBUTING.en.md)
 
-## Ways to contribute
+Este es un repositorio personal de dotfiles y demostración. Otros son bienvenidos a reproducirlo, pero refleja un flujo de trabajo y configuración de hardware específicos. Se aceptan contribuciones e informes de configuración; cambios opinados o fuera de alcance pueden ser rechazados.
 
-- **Open an issue** — bug reports, setup reports by distro/GPU, or ideas
-- **Send a pull request** — bug fixes, distro/GPU compatibility fixes, documentation, and setup scripts are especially welcome
+## Formas de contribuir
 
-## Before you start
+- **Abrir un issue** — reportes de errores, informes de configuración por distro/GPU, o ideas
+- **Enviar un pull request** — correcciones de errores, correcciones de compatibilidad distro/GPU, documentación y scripts de configuración son especialmente bienvenidos
 
-You do not need the full agent stack to fix documentation or a script. To test shell changes locally you only need `bash` and `shellcheck`.
+## Antes de empezar
 
-## Run the checks locally
+No necesitas la pila completa de agentes para arreglar documentación o un script. Para probar cambios de shell localmente solo necesitas `bash` y `shellcheck`.
+
+## Ejecutar las comprobaciones localmente
 
 ```bash
 # Lint
@@ -21,19 +23,19 @@ shellcheck scripts/*.sh scripts/lib/*.sh tests/*.sh
 for t in tests/*.sh; do bash "$t"; done
 ```
 
-## Conventions
+## Convenciones
 
-- **Commits**: Conventional Commits (`feat`, `fix`, `docs`, `chore`, …). No AI attribution lines.
-- **Tests and docs**: Keep them with the code they relate to.
-- **Language**: English for code, documentation, and commit messages.
+- **Commits**: Conventional Commits (`feat`, `fix`, `docs`, `chore`, …). Sin líneas de atribución a IA.
+- **Tests y docs**: Mantenlos junto al código al que se refieren.
+- **Idioma**: El español es el idioma predeterminado y canónico de la documentación; las versiones en inglés se mantienen en archivos `.en.md`. El código y los mensajes de commit se escriben en inglés.
 
 ## Pull requests
 
-1. Fork the repository and branch off `main`.
-2. Keep the change focused.
-3. Make sure the CI workflow (`shellcheck` + tests) passes.
-4. Describe what the change does and why.
+1. Haz fork del repositorio y crea una rama desde `main`.
+2. Mantén el cambio enfocado.
+3. Asegúrate de que el workflow de CI (`shellcheck` + tests) pase.
+4. Describe qué hace el cambio y por qué.
 
-## Environment setup
+## Configuración del entorno
 
-See [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) for the accounts, hardware, and knowledge needed before starting, and [docs/SETUP.md](docs/SETUP.md) for the full bootstrap, restore, and verification procedure.
+Consulte [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) para las cuentas, hardware y conocimientos necesarios antes de empezar, y [docs/SETUP.md](docs/SETUP.md) para el procedimiento completo de arranque, restauración y verificación.
