@@ -1,129 +1,130 @@
-# Setup guide
+# Guía de instalación
 
-How to back up the environment and rebuild it on a fresh Linux install (Arch, Debian/Ubuntu, or Fedora) or Windows via WSL2. The author's reference is [Omarchy](https://omarchy.org) but it is not required.
+**Español** · [English](SETUP.en.md)
 
-**This repository contains no secrets.** Secrets and data live in a separate encrypted backup.
+Cómo respaldar el entorno y reconstruirlo en una instalación nueva de Linux (Arch, Debian/Ubuntu o Fedora) o Windows mediante WSL2. El entorno de referencia del autor es [Omarchy](https://omarchy.org), pero no es un requisito.
+
+**Este repositorio no contiene secretos.** Los secretos y los datos se guardan en un respaldo cifrado independiente.
 
 ---
 
 ## Windows (WSL2)
 
-- Requires Windows 10 21H2+ or Windows 11. In PowerShell (admin): `wsl --install` installs WSL2 with Ubuntu by default; reboot if asked.
-- For GPU: install the NVIDIA driver for Windows (it ships WSL CUDA support). Do NOT install a Linux NVIDIA driver inside WSL. If you have no NVIDIA GPU, skip this — the local model runs on CPU and the cloud combos still work.
-- Enable systemd in WSL2 so the tuned on-demand Ollama service works: create or edit `/etc/wsl.conf` inside Ubuntu with:
+- Se requiere Windows 10 21H2 o posterior, o Windows 11. En PowerShell (como administrador), `wsl --install` instala WSL2 con Ubuntu de forma predeterminada; reinicia si se solicita.
+- Para usar la GPU, instala el controlador NVIDIA para Windows (incluye compatibilidad con WSL CUDA). NO instales un controlador NVIDIA de Linux dentro de WSL. Si no tienes una GPU NVIDIA, omite este paso: el modelo local se ejecutará en la CPU y las combinaciones en la nube seguirán funcionando.
+- Habilita systemd en WSL2 para que funcione el servicio de Ollama optimizado y bajo demanda: crea o edita `/etc/wsl.conf` dentro de Ubuntu con lo siguiente:
   ```
   [boot]
   systemd=true
   ```
-  then from Windows PowerShell run `wsl --shutdown` and reopen Ubuntu. Without systemd, `bootstrap.sh` skips the service step and you start Ollama manually with `ollama serve`.
-- From there, clone the repo inside the WSL2 home and follow the same steps below (`bootstrap.sh` detects `apt` automatically).
+  Luego, desde Windows PowerShell, ejecuta `wsl --shutdown` y vuelve a abrir Ubuntu. Sin systemd, `bootstrap.sh` omite la configuración del servicio y tendrás que iniciar Ollama manualmente con `ollama serve`.
+- A partir de ahí, clona el repositorio dentro del directorio personal de WSL2 y sigue los mismos pasos de abajo (`bootstrap.sh` detecta `apt` automáticamente).
 
 ---
 
-## Before reinstalling (or once a week)
+## Antes de reinstalar (o una vez por semana)
 
-Create the encrypted backup:
+Crea el respaldo cifrado:
 
 ```bash
 sudo pacman -S --needed age sqlite
 ./scripts/backup.sh
 ```
 
-It generates `~/ai-backup-YYYYMMDD-HHMM.tar.gz.age` containing:
+El script genera `~/ai-backup-YYYYMMDD-HHMM.tar.gz.age` con:
 
-- `~/.omniroute/.env` and `storage.sqlite`: providers, combos, filters and the key that decrypts them
-- `~/.engram/engram.db`: your agents' memory
-- `~/.config/secrets/`: your OmniRoute key
-- The herdr configuration, plus reference copies of `opencode.json`, `CLAUDE.md` and `.bashrc`
+- `~/.omniroute/.env` y `storage.sqlite`: proveedores, combinaciones, filtros y la clave que los descifra
+- `~/.engram/engram.db`: la memoria de tus agentes
+- `~/.config/secrets/`: la clave de OmniRoute
+- La configuración de herdr, además de copias de referencia de `opencode.json`, `CLAUDE.md` y `.bashrc`
 
-The backup does **not** include anything Codex-related. The repo-managed Codex additions (profiles, `codex.sh` launchers and the `AGENTS.md` delegation block) are reproduced by rerunning `./scripts/apply-patches.sh`. Your own `~/.codex` auth and config stay user-managed: this repo never copies them, so sign in to Codex again on a fresh machine.
+El respaldo **no** incluye nada relacionado con Codex. Las adiciones de Codex gestionadas por el repositorio (perfiles, lanzadores `codex.sh` y el bloque de delegación de `AGENTS.md`) se vuelven a generar al ejecutar `./scripts/apply-patches.sh`. La autenticación y configuración personal de `~/.codex` siguen bajo tu gestión: este repositorio nunca las copia, así que tendrás que iniciar sesión en Codex de nuevo en una máquina nueva.
 
-**Copy that file off the machine** (USB drive or cloud) and store the password in your password manager. Without it there is no restore.
+**Copia ese archivo fuera del equipo** (en una unidad USB o en la nube) y guarda la contraseña en tu administrador de contraseñas. Sin el archivo no podrás restaurar los datos.
 
 ---
 
-## Rebuild on a fresh Linux install (Arch, Debian/Ubuntu, or Fedora) or WSL2
+## Reconstruir el entorno en una instalación nueva de Linux (Arch, Debian/Ubuntu o Fedora) o WSL2
 
-### 1. Get the repo and the backup
+### 1. Obtener el repositorio y el respaldo
 
-Clone the repo and copy the `.age` file to your `$HOME`.
+Clona el repositorio y copia el archivo `.age` en tu directorio `$HOME`.
 
-### 2. Install and configure
+### 2. Instalar y configurar
 
 ```bash
 chmod +x scripts/*.sh
 ./scripts/bootstrap.sh
 ```
 
-It installs the packages, OpenCode, Node and OmniRoute, copies the configuration (creating `~/.config/agent-routing/*.env` from the `.example` files when they don't exist yet), sets up Ollama on demand and pulls `qwen3:14b`.
+El script instala los paquetes, OpenCode, Node y OmniRoute; copia la configuración (crea `~/.config/agent-routing/*.env` a partir de los archivos `.example` si aún no existen); configura Ollama bajo demanda y descarga `qwen3:14b`.
 
-> `bootstrap.sh` auto-detects the package manager (`pacman`/`apt`/`dnf`), runs `apt-get update` on Debian/Ubuntu, and falls back to the official Ollama/OpenCode installers on non-Arch distros. It exits with an error on unsupported distros.
+> `bootstrap.sh` detecta automáticamente el gestor de paquetes (`pacman`/`apt`/`dnf`), ejecuta `apt-get update` en Debian/Ubuntu y recurre a los instaladores oficiales de Ollama/OpenCode en distribuciones que no son Arch. Finaliza con un error en distribuciones no compatibles.
 
-At the end it lists what must be installed manually: **Claude Code**, **Gentle AI** and **herdr**. Install them following their official documentation.
+Al finalizar, muestra qué debes instalar manualmente: **Claude Code**, **Gentle AI** y **herdr**. Instálalos siguiendo su documentación oficial.
 
-Review `~/.config/agent-routing/cloud.env` and `local.env` and adjust the model names if your combos differ.
+Revisa `~/.config/agent-routing/cloud.env` y `local.env` y ajusta los nombres de los modelos si difieren de tus combinaciones.
 
-### 3. Restore the data
+### 3. Restaurar los datos
 
-With OmniRoute and OpenCode closed:
+Con OmniRoute y OpenCode cerrados:
 
 ```bash
 ./scripts/restore-data.sh ~/ai-backup-YYYYMMDD-HHMM.tar.gz.age
 ```
 
-Without a backup, recreate OmniRoute manually following [`OMNIROUTE.md`](OMNIROUTE.md).
+Si no tienes un respaldo, vuelve a crear OmniRoute manualmente siguiendo [`OMNIROUTE.md`](OMNIROUTE.md).
 
-### 4. Gentle AI (also installs Engram)
+### 4. Gentle AI (también instala Engram)
 
 ```bash
 gentle-ai install --agent claude-code,opencode --dry-run   # review first
 gentle-ai install --agent claude-code,opencode
 ```
 
-### 5. Apply the custom additions
+### 5. Aplicar las adiciones personalizadas
 
 ```bash
 ./scripts/apply-patches.sh
 ```
 
-Adds the OmniRoute provider to OpenCode and the delegation block to `CLAUDE.md` without overwriting Gentle AI's configuration. Safe to rerun after every `gentle-ai install`. It also runs `restore.sh` (step 6) at the end, so a single refresh after any Gentle AI install/update re-applies the output style and all the hooks in one step.
+Agrega el proveedor OmniRoute a OpenCode y el bloque de delegación a `CLAUDE.md` sin sobrescribir la configuración de Gentle AI. Es seguro volver a ejecutarlo después de cada `gentle-ai install`. Al final también ejecuta `restore.sh` (paso 6), así que una sola actualización después de instalar o actualizar Gentle AI vuelve a aplicar el estilo de salida y todos los hooks.
 
-It also sets up **Codex** as an independent peer orchestrator (a fallback brain next to Claude Code, not a delegated agent):
+También configura **Codex** como orquestador par independiente (un cerebro de respaldo junto a Claude Code, no un agente delegado):
 
-- Installs the profiles `~/.codex/elvinlab-cloud.config.toml` and `elvinlab-local.config.toml` (OmniRoute at `127.0.0.1:20128`, `wire_api = "responses"`, key from `OMNIROUTE_API_KEY`) through `scripts/install-codex-profiles.sh`.
-- Installs the launchers `~/.bashrc.d/codex.sh`: `codex-cloud` (`codex --profile elvinlab-cloud`, combo `elvinlabCode`) and `codex-local` (`codex --profile elvinlab-local`, combo `elvinlabLocal`).
-- Injects the tier delegation block into `~/.codex/AGENTS.md`, outside Gentle AI's managed regions (markers `<!-- elvinlab:delegation-codex -->`). Codex must be installed and have created `AGENTS.md` first; otherwise the script says so, and you rerun it afterwards.
+- Instala los perfiles `~/.codex/elvinlab-cloud.config.toml` y `elvinlab-local.config.toml` (OmniRoute en `127.0.0.1:20128`, `wire_api = "responses"`, clave de `OMNIROUTE_API_KEY`) mediante `scripts/install-codex-profiles.sh`.
+- Instala los lanzadores `~/.bashrc.d/codex.sh`: `codex-cloud` (`codex --profile elvinlab-cloud`, combinación `elvinlabCode`) y `codex-local` (`codex --profile elvinlab-local`, combinación `elvinlabLocal`).
+- Inserta el bloque de delegación por nivel en `~/.codex/AGENTS.md`, fuera de las regiones administradas por Gentle AI (marcadores `<!-- elvinlab:delegation-codex -->`). Codex debe estar instalado y haber creado `AGENTS.md`; si no, el script lo indica y tendrás que volver a ejecutarlo después.
 
-Your own `~/.codex` config and auth are never touched. If a profile or launcher already exists with different content, the installer refuses to overwrite it: move it aside or compare it manually, then rerun.
+La configuración y autenticación propias de `~/.codex` nunca se modifican. Si ya existe un perfil o lanzador con contenido distinto, el instalador se niega a sobrescribirlo: apártalo o compáralo manualmente y luego vuelve a ejecutar el instalador.
 
-Codex shares Engram and `~/.config/agent-routing/active.env` with Claude Code, so `agent-profile cloud|local` switches both brains, and Codex delegates trivial and bounded work to OpenCode with the same tiers.
+Codex comparte Engram y `~/.config/agent-routing/active.env` con Claude Code, de modo que `agent-profile cloud|local` cambia ambos cerebros, y Codex delega el trabajo trivial y acotado a OpenCode con los mismos niveles.
 
-### 6. Restore Claude Code hooks and the opencode permission ceiling
+### 6. Restaurar los hooks de Claude Code y el límite de permisos de OpenCode
 
-Step 5 already runs this for you. Run it standalone only if you want to refresh
-the settings without reapplying the other patches:
+El paso 5 ya lo ejecuta. Ejecútalo por separado solo si quieres actualizar la configuración sin volver a aplicar los demás parches:
 
 ```bash
 bash ~/.config/agent-routing/restore.sh
 ```
 
-Re-applies the Gentleman output style, the caveman ULTRA SessionStart hook, the RTK PreToolUse hook (Bash output compaction), the herdr tier-routing UserPromptSubmit hook (injects the active `TIER1_MODEL`/`TIER2_MODEL` so the routing reminder fires in every chat and repo), and the opencode autonomous permission ceiling (broad-safe: edit/bash/test allowed; push, deploy wrangler/pnpm, gh pr merge/release/auth, rm -rf, ssh/scp/rsync denied) into `~/.claude/settings.json` and `~/.config/opencode/opencode.json`. It is idempotent and **must run after step 4 (Gentle AI)** because it patches `~/.claude/settings.json` (errors if that file is missing).
+Vuelve a aplicar el estilo de salida Gentleman, el hook de sesión ULTRA de caveman, el hook RTK PreToolUse (compactación de la salida de Bash), el hook herdr UserPromptSubmit para enrutar por nivel (inyecta los modelos `TIER1_MODEL`/`TIER2_MODEL` activos para que el recordatorio de enrutamiento aparezca en cada chat y repositorio) y el límite de permisos autónomos de opencode (seguro de forma amplia: se permiten edit/bash/test; se deniegan push, deploy wrangler/pnpm, gh pr merge/release/auth, rm -rf, ssh/scp/rsync) en `~/.claude/settings.json` y `~/.config/opencode/opencode.json`. Es idempotente y **debe ejecutarse después del paso 4 (Gentle AI)** porque modifica `~/.claude/settings.json` (y falla si el archivo no existe).
 
-> **Why re-apply instead of "set once"?** Gentle AI owns `~/.claude/settings.json` and can overwrite these on a reinstall/update, so they cannot be made immune — they are re-applied. Because `apply-patches.sh` runs `restore.sh`, rerunning `./scripts/apply-patches.sh` after any Gentle AI install/update restores all of them in one step.
+> **¿Por qué volver a aplicarlo en lugar de «configurarlo una vez»?** Gentle AI administra `~/.claude/settings.json` y puede sobrescribir estos ajustes durante una reinstalación o actualización, por lo que no se pueden proteger de ese modo. Se vuelven a aplicar. Como `apply-patches.sh` ejecuta `restore.sh`, basta con volver a ejecutar `./scripts/apply-patches.sh` después de cualquier instalación o actualización de Gentle AI para restaurar todos los ajustes en un solo paso.
 
-### 7. herdr skill for Claude Code
+### 7. Skill de herdr para Claude Code
 
 ```bash
 npx skills add herdrdev/herdr --skill herdr -g
 ```
 
-### 8. Open a new terminal
+### 8. Abrir una terminal nueva
 
-So it loads `~/.bashrc.d/ai.sh` and your secrets.
+Así se carga `~/.bashrc.d/ai.sh` y tus secretos.
 
 ---
 
-## Verification
+## Verificación
 
 ```bash
 # OmniRoute
@@ -151,33 +152,33 @@ codex-cloud "reply pong"                    # → pong (via elvinlabCode)
 codex-local "reply pong"                    # → pong (via elvinlabLocal)
 ```
 
-In Claude Code (inside herdr): `echo $HERDR_ENV` → `1`, `/mcp` → engram connected. Then ask it to write a test **without mentioning herdr**: it should delegate to OpenCode and review the diff.
+En Claude Code (dentro de herdr): `echo $HERDR_ENV` → `1`, `/mcp` → engram conectado. Luego pídele que escriba una prueba **sin mencionar herdr**: debería delegar el trabajo a OpenCode y revisar el diff.
 
-In the OmniRoute dashboard: test each combo with ▶ and confirm it resolves on the first step.
+En el panel de OmniRoute, prueba cada combinación con ▶ y confirma que se resuelva en el primer paso.
 
-On WSL2 without systemd, run `ollama serve` manually instead of `ollama-up`.
-
----
-
-## Daily routine
-
-1. `pkill voxtype` if it is running (frees ~3 GB of VRAM)
-2. Pane 1: `omniroute`
-3. Pane 2: `ollama-up`
-4. Claude Code and OpenCode in your project (or `codex-cloud` / `codex-local` as the fallback brain)
-5. When done: Ctrl+C in both panes and `ollama-down`
-
-Delegation profiles: `agent-profile` (show), `agent-profile cloud` / `agent-profile local` (switch).
-
-Monitoring in OmniRoute: *Combos → elvinlabCode* (success per step), *Combo Studio* (live), *Logs* (errors), *Provider Quota* (usage).
+En WSL2 sin systemd, ejecuta `ollama serve` manualmente en lugar de `ollama-up`.
 
 ---
 
-## Roadmap
+## Rutina diaria
 
-- Configure voxtype to use the CPU or a smaller model
-- herdr script that opens the whole layout with one command
-- Evaluate a lighter Gentle AI preset for OpenCode (~50k tokens per request)
-- Report the `_omnirouteInternalRequest` / `_omnirouteSkipContextRelay` bug to OmniRoute
+1. Ejecuta `pkill voxtype` si está activo (libera unos 3 GB de VRAM).
+2. Panel 1: `omniroute`.
+3. Panel 2: `ollama-up`.
+4. Inicia Claude Code y OpenCode en el proyecto (o `codex-cloud` / `codex-local` como cerebro de respaldo).
+5. Al terminar: Ctrl+C en ambos paneles y `ollama-down`.
 
-Known problems and fixes: [`LESSONS.md`](LESSONS.md).
+Perfiles de delegación: `agent-profile` (mostrar), `agent-profile cloud` / `agent-profile local` (cambiar).
+
+Supervisión en OmniRoute: *Combos → elvinlabCode* (éxito por paso), *Combo Studio* (en vivo), *Logs* (errores), *Provider Quota* (cuota del proveedor).
+
+---
+
+## Hoja de ruta
+
+- Configurar voxtype para que use la CPU o un modelo más pequeño
+- Crear un script de herdr que abra todo el diseño con un solo comando
+- Evaluar un preset más ligero de Gentle AI para OpenCode (unos 50k tokens por solicitud)
+- Informar el error `_omnirouteInternalRequest` / `_omnirouteSkipContextRelay` a OmniRoute
+
+Problemas conocidos y soluciones: [`LESSONS.md`](LESSONS.md).
