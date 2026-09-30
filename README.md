@@ -20,6 +20,7 @@ The result: frontier-level judgment where it matters, **$0 for the delegated wor
 
 ## ✨ Highlights
 
+- 💵 **$20/month, total** — one Claude Pro subscription; every other model and tool is free-tier or open-source.
 - 🧠 **One brain, many hands** — Claude keeps architecture, debugging and security; cheaper models handle renames, tests and boilerplate.
 - 🤝 **A backup brain** — Codex runs the same pipeline as an independent peer when Claude Code is down, with `codex-cloud` / `codex-local`.
 - 🔀 **Three routing combos, five providers** — each combo degrades gracefully from the best free model down to local AI.
@@ -184,6 +185,8 @@ agentic-dev-setup/
 ```
 
 ## 🚀 Quick start
+
+New here? See [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) for the accounts, hardware and knowledge you need before starting.
 
 Bootstrap supports Arch, Debian/Ubuntu, Fedora, and Windows via WSL2. See [`docs/SETUP.md`](docs/SETUP.md) for WSL2 details.
 
