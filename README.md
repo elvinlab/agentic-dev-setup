@@ -112,7 +112,11 @@ A 14B model on a 12 GB consumer GPU only works if every byte of VRAM counts. The
 
 The service is **on demand**: it never starts at boot. `ollama-up` and `ollama-down` start and stop it, so the GPU stays free when I am not coding.
 
+> **GPU sizing note:** The reference is RTX 3060 12 GB + `qwen3:14b` + 16k context (`OLLAMA_CONTEXT_LENGTH`). With less VRAM, use a smaller model or shorter context (edit `OLLAMA_CONTEXT_LENGTH` / the model tag). With no NVIDIA GPU, Ollama runs on CPU (much slower) — the cloud combos still work.
+
 ## ⌨️ My workstation
+
+This is the author's reference machine; any supported distro (Arch, Debian/Ubuntu, Fedora) or WSL2 works.
 
 | | |
 |---|---|
@@ -181,7 +185,7 @@ agentic-dev-setup/
 
 ## 🚀 Quick start
 
-Built for Omarchy, but every piece is portable to any Linux with an NVIDIA GPU.
+Bootstrap supports Arch, Debian/Ubuntu, Fedora, and Windows via WSL2. See [`docs/SETUP.md`](docs/SETUP.md) for WSL2 details.
 
 ```bash
 git clone https://github.com/elvinlab/agentic-dev-setup.git

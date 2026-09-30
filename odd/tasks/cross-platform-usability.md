@@ -59,11 +59,12 @@ forever. Decisions taken with the user:
       ollama on non-Arch), WSL2 systemctl guard, header/message generalization.
       Route: DELEGATED + Claude inline fix (opencode auto-install on non-Arch).
       Verified: `bash -n` OK, shellcheck clean, codex tests still green.
-- [ ] CPU-4 — Docs: `README.md` + `docs/SETUP.md` multi-distro + WSL2 sections,
-      generalize Omarchy/RTX-3060 assumptions, add prerequisites and GPU sizing
-      note. Route: delegated writer (Tier 2, elvinlabCode) — code now settled.
-- [ ] CPU-5 — Verify: shellcheck bootstrap.sh + distro.sh, run tests/*.sh, doc
-      anchor/link sanity. Route: inline + per-action workers as needed.
+- [x] CPU-4 — Docs: `README.md` + `docs/SETUP.md` multi-distro + WSL2 sections,
+      generalized Omarchy/RTX-3060 assumptions, GPU sizing note, prereqs note.
+      Route: DELEGATED to opencode elvinlabCode, Claude-reviewed. Done: 7 edits,
+      WSL2 facts accurate, all links resolve.
+- [x] CPU-5 — Verify: tests 16/16, shellcheck clean, `bash -n` OK, codex tests
+      pass, WSL2 content + relative links verified. Route: inline.
 
 ## Acceptance criteria
 - `bootstrap.sh` runs its detection on a non-Arch distro without crashing and

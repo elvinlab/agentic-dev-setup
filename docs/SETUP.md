@@ -1,8 +1,22 @@
 # Setup guide
 
-How to back up the environment and rebuild it on a fresh [Omarchy](https://omarchy.org) install.
+How to back up the environment and rebuild it on a fresh Linux install (Arch, Debian/Ubuntu, or Fedora) or Windows via WSL2. The author's reference is [Omarchy](https://omarchy.org) but it is not required.
 
 **This repository contains no secrets.** Secrets and data live in a separate encrypted backup.
+
+---
+
+## Windows (WSL2)
+
+- Requires Windows 10 21H2+ or Windows 11. In PowerShell (admin): `wsl --install` installs WSL2 with Ubuntu by default; reboot if asked.
+- For GPU: install the NVIDIA driver for Windows (it ships WSL CUDA support). Do NOT install a Linux NVIDIA driver inside WSL. If you have no NVIDIA GPU, skip this — the local model runs on CPU and the cloud combos still work.
+- Enable systemd in WSL2 so the tuned on-demand Ollama service works: create or edit `/etc/wsl.conf` inside Ubuntu with:
+  ```
+  [boot]
+  systemd=true
+  ```
+  then from Windows PowerShell run `wsl --shutdown` and reopen Ubuntu. Without systemd, `bootstrap.sh` skips the service step and you start Ollama manually with `ollama serve`.
+- From there, clone the repo inside the WSL2 home and follow the same steps below (`bootstrap.sh` detects `apt` automatically).
 
 ---
 
@@ -28,7 +42,7 @@ The backup does **not** include anything Codex-related. The repo-managed Codex a
 
 ---
 
-## Rebuild on a fresh Omarchy
+## Rebuild on a fresh Linux install (Arch, Debian/Ubuntu, or Fedora) or WSL2
 
 ### 1. Get the repo and the backup
 
@@ -42,6 +56,8 @@ chmod +x scripts/*.sh
 ```
 
 It installs the packages, OpenCode, Node and OmniRoute, copies the configuration (creating `~/.config/agent-routing/*.env` from the `.example` files when they don't exist yet), sets up Ollama on demand and pulls `qwen3:14b`.
+
+> `bootstrap.sh` auto-detects the package manager (`pacman`/`apt`/`dnf`), runs `apt-get update` on Debian/Ubuntu, and falls back to the official Ollama/OpenCode installers on non-Arch distros. It exits with an error on unsupported distros.
 
 At the end it lists what must be installed manually: **Claude Code**, **Gentle AI** and **herdr**. Install them following their official documentation.
 
@@ -133,6 +149,8 @@ codex-local "reply pong"                    # → pong (via elvinlabLocal)
 In Claude Code (inside herdr): `echo $HERDR_ENV` → `1`, `/mcp` → engram connected. Then ask it to write a test **without mentioning herdr**: it should delegate to OpenCode and review the diff.
 
 In the OmniRoute dashboard: test each combo with ▶ and confirm it resolves on the first step.
+
+On WSL2 without systemd, run `ollama serve` manually instead of `ollama-up`.
 
 ---
 
