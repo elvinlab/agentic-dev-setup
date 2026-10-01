@@ -1,3 +1,5 @@
+<a id="top"></a>
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="assets/banner-light.svg">
@@ -13,6 +15,12 @@
 [![Release](https://img.shields.io/github/v/release/elvinlab/agentic-dev-setup?color=8b5cf6)](https://github.com/elvinlab/agentic-dev-setup/releases) [![CI](https://github.com/elvinlab/agentic-dev-setup/actions/workflows/ci.yml/badge.svg)](https://github.com/elvinlab/agentic-dev-setup/actions/workflows/ci.yml) [![Licencia](https://img.shields.io/github/license/elvinlab/agentic-dev-setup?color=06b6d4)](LICENSE) [![Estrellas](https://img.shields.io/github/stars/elvinlab/agentic-dev-setup?color=ec4899)](https://github.com/elvinlab/agentic-dev-setup/stargazers)
 
 ![Proveedores](https://img.shields.io/badge/proveedores-5-8b5cf6?style=flat-square) ![Combos](https://img.shields.io/badge/combos-3-8b5cf6?style=flat-square) ![Costo](https://img.shields.io/badge/costo-US%2420%2Fmes-06b6d4?style=flat-square) ![Delegado](https://img.shields.io/badge/delegado-US%240-ec4899?style=flat-square) ![Contexto](https://img.shields.io/badge/contexto-16k-06b6d4?style=flat-square) ![GPU](https://img.shields.io/badge/GPU-RTX_3060_12GB-8b5cf6?style=flat-square)
+
+</div>
+
+<div align="center">
+
+<b>[Para quién](#-para-quién-es-esto) · [En acción](#-en-acción) · [Arquitectura](#-cómo-encaja-todo) · [Combos](#-combos-de-enrutamiento) · [Ejemplos](#-ejemplos) · [Documentación](#-documentación) · [Inicio rápido](#-inicio-rápido)</b>
 
 </div>
 
@@ -58,7 +66,14 @@ Capturas reales de mi estación de trabajo, no mockups.
 
 <sub><b>Un cerebro, muchas manos.</b> Claude Code (izquierda) razona, escribe el brief y delega a un agente de OpenCode (derecha) que implementa con TDD.</sub>
 
-<br><br>
+</div>
+
+<details>
+<summary><b>Ver más capturas</b></summary>
+
+<div align="center">
+
+<br>
 
 <img src="assets/screenshots/06-parallel-agents.webp" alt="Tres agentes de OpenCode trabajando en paralelo, cada uno en su propio worktree y rama, coordinados desde Claude Code" width="100%">
 
@@ -93,6 +108,10 @@ Capturas reales de mi estación de trabajo, no mockups.
 
 </div>
 
+</details>
+
+<p align="right"><a href="#top">↑ Volver arriba</a></p>
+
 ## 🏗 Cómo encaja todo
 
 ```mermaid
@@ -113,6 +132,8 @@ flowchart LR
     X <--> E
     C -. "revisa cada diff" .-> O
 ```
+
+<p align="right"><a href="#top">↑ Volver arriba</a></p>
 
 ## 🧰 La pila
 
@@ -149,6 +170,8 @@ Cambiar toda la delegación entre nube y local es un comando: `agent-profile clo
 
 Los modelos nunca se codifican duro: Claude lee `~/.config/agent-routing/active.env` antes de cada delegación. Las reglas completas están en [`home/.claude/delegation-block.md`](home/.claude/delegation-block.md).
 
+<p align="right"><a href="#top">↑ Volver arriba</a></p>
+
 ## 🤝 Codex como orquestador par
 
 Claude Code es el cerebro por defecto, pero no es el único. Cuando no está disponible, **Codex** conduce la misma tubería como *orquestador* independiente —nunca un agente delegado. Dos perfiles gestionados por el repo lo conectan directamente a OmniRoute:
@@ -161,6 +184,8 @@ Claude Code es el cerebro por defecto, pero no es el único. Cuando no está dis
 Los perfiles viven en [`home/.config/codex-profiles/`](home/.config/codex-profiles/) y los despliega `apply-patches.sh` mediante [`scripts/install-codex-profiles.sh`](scripts/install-codex-profiles.sh). El instalador es **conservador por diseño**: se niega a sobrescribir tu `~/.codex/config.toml` existente, auth o cualquier otro perfil — un archivo en conflicto detiene la instalación en lugar de machacarlo. La clave API viene de `OMNIROUTE_API_KEY`; nada secreto se escribe en disco.
 
 **Mismos niveles que Claude.** Codex no solo corre un modelo — delega como hace Claude. `apply-patches.sh` inyecta [`home/.codex/delegation-block.md`](home/.codex/delegation-block.md) en `~/.codex/AGENTS.md` (fuera de las regiones gestionadas por gentle-ai, idempotentemente), así Codex lee el **mismo** `~/.config/agent-routing/active.env` y enruta trivial → `TIER1_MODEL`, acotado → `TIER2_MODEL` a través de herdr + OpenCode, guardando el trabajo complejo para sí mismo. Un `agent-profile cloud|local` cambia **ambos** cerebros a la vez.
+
+<p align="right"><a href="#top">↑ Volver arriba</a></p>
 
 ## 🖥 IA local: qwen3:14b en una RTX 3060
 
@@ -179,7 +204,12 @@ El servicio es **bajo demanda**: nunca arranca en el arranque. `ollama-up` y `ol
 
 > **Nota sobre dimensionamiento de GPU:** La referencia es RTX 3060 12 GB + `qwen3:14b` + contexto 16k (`OLLAMA_CONTEXT_LENGTH`). Con menos VRAM, use un modelo menor o contexto más corto (edite `OLLAMA_CONTEXT_LENGTH` / la etiqueta del modelo). Sin GPU NVIDIA, Ollama corre en CPU (mucho más lento) — los combos en la nube siguen funcionando.
 
+<p align="right"><a href="#top">↑ Volver arriba</a></p>
+
 ## ⌨️ Mi estación de trabajo
+
+<details>
+<summary><b>Ver hardware y versiones</b></summary>
 
 Esta es la máquina de referencia del autor; cualquier distro soportada (Arch, Debian/Ubuntu, Fedora) o WSL2 funciona.
 
@@ -210,6 +240,10 @@ Esta es la máquina de referencia del autor; cualquier distro soportada (Arch, D
 
 </details>
 
+</details>
+
+<p align="right"><a href="#top">↑ Volver arriba</a></p>
+
 ## 🛡 Decisiones de diseño
 
 - **Los secretos nunca tocan git.** Las claves se leen de variables de entorno (`{env:OMNIROUTE_API_KEY}`). Claves de proveedores, bases de datos y memoria se respaldan en un archivo encriptado con [`age`](https://github.com/FiloSottile/age).
@@ -221,6 +255,9 @@ Esta es la máquina de referencia del autor; cualquier distro soportada (Arch, D
 - **Las lecciones se escriben.** Cada problema resuelto en el camino está en [`docs/LESSONS.md`](docs/LESSONS.md).
 
 ## 📁 Estructura del repositorio
+
+<details>
+<summary><b>Ver árbol de archivos</b></summary>
 
 ```
 agentic-dev-setup/
@@ -247,6 +284,10 @@ agentic-dev-setup/
 ├── system/etc/systemd/system/ollama.service.d/override.conf
 └── tools/                         ← generador de banner
 ```
+
+</details>
+
+<p align="right"><a href="#top">↑ Volver arriba</a></p>
 
 ## 🌐 Ejemplos
 

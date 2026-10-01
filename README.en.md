@@ -1,3 +1,5 @@
+<a id="top"></a>
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="assets/banner-light.svg">
@@ -13,6 +15,12 @@
 [![Release](https://img.shields.io/github/v/release/elvinlab/agentic-dev-setup?color=8b5cf6)](https://github.com/elvinlab/agentic-dev-setup/releases) [![CI](https://github.com/elvinlab/agentic-dev-setup/actions/workflows/ci.yml/badge.svg)](https://github.com/elvinlab/agentic-dev-setup/actions/workflows/ci.yml) [![License](https://img.shields.io/github/license/elvinlab/agentic-dev-setup?color=06b6d4)](LICENSE) [![Stars](https://img.shields.io/github/stars/elvinlab/agentic-dev-setup?color=ec4899)](https://github.com/elvinlab/agentic-dev-setup/stargazers)
 
 ![Providers](https://img.shields.io/badge/providers-5-8b5cf6?style=flat-square) ![Combos](https://img.shields.io/badge/combos-3-8b5cf6?style=flat-square) ![Total cost](https://img.shields.io/badge/total-US%2420%2Fmo-06b6d4?style=flat-square) ![Delegated](https://img.shields.io/badge/delegated-US%240-ec4899?style=flat-square) ![Context](https://img.shields.io/badge/context-16k-06b6d4?style=flat-square) ![GPU](https://img.shields.io/badge/GPU-RTX_3060_12GB-8b5cf6?style=flat-square)
+
+</div>
+
+<div align="center">
+
+<b>[Who it's for](#-who-this-is-for) · [In action](#-in-action) · [Architecture](#-how-it-fits-together) · [Combos](#-routing-combos) · [Examples](#-examples) · [Docs](#-documentation) · [Quick start](#-quick-start)</b>
 
 </div>
 
@@ -58,7 +66,14 @@ Real screenshots from my workstation, not mockups.
 
 <sub><b>One brain, many hands.</b> Claude Code (left) reasons, writes the brief and delegates to an OpenCode agent (right) that implements it with TDD.</sub>
 
-<br><br>
+</div>
+
+<details>
+<summary><b>See more screenshots</b></summary>
+
+<div align="center">
+
+<br>
 
 <img src="assets/screenshots/06-parallel-agents.webp" alt="Three OpenCode agents working in parallel, each in its own worktree and branch, coordinated from Claude Code" width="100%">
 
@@ -93,6 +108,10 @@ Real screenshots from my workstation, not mockups.
 
 </div>
 
+</details>
+
+<p align="right"><a href="#top">↑ Back to top</a></p>
+
 ## 🏗 How it fits together
 
 ```mermaid
@@ -113,6 +132,8 @@ flowchart LR
     X <--> E
     C -. "reviews every diff" .-> O
 ```
+
+<p align="right"><a href="#top">↑ Back to top</a></p>
 
 ## 🧰 The stack
 
@@ -149,6 +170,8 @@ Switching the whole delegation between cloud and local is one command: `agent-pr
 
 Models are never hardcoded: Claude reads `~/.config/agent-routing/active.env` before every delegation. The complete rules live in [`home/.claude/delegation-block.md`](home/.claude/delegation-block.md).
 
+<p align="right"><a href="#top">↑ Back to top</a></p>
+
 ## 🤝 Codex as a peer orchestrator
 
 Claude Code is the default brain, but it is not the only one. When it is unavailable, **Codex** drives the same pipeline as an *independent* orchestrator — never a delegated agent. Two repo-managed profiles wire it straight into OmniRoute:
@@ -161,6 +184,8 @@ Claude Code is the default brain, but it is not the only one. When it is unavail
 The profiles live in [`home/.config/codex-profiles/`](home/.config/codex-profiles/) and are deployed by `apply-patches.sh` through [`scripts/install-codex-profiles.sh`](scripts/install-codex-profiles.sh). The installer is **conservative by design**: it refuses to overwrite your existing `~/.codex/config.toml`, auth or any other profile — a conflicting file stops the install instead of clobbering it. The API key comes from `OMNIROUTE_API_KEY`; nothing secret is written to disk.
 
 **Same tiers as Claude.** Codex doesn't just run a model — it delegates like Claude does. `apply-patches.sh` injects [`home/.codex/delegation-block.md`](home/.codex/delegation-block.md) into `~/.codex/AGENTS.md` (outside the gentle-ai managed regions, idempotently), so Codex reads the **same** `~/.config/agent-routing/active.env` and routes trivial → `TIER1_MODEL`, bounded → `TIER2_MODEL` through herdr + OpenCode, keeping complex work for itself. One `agent-profile cloud|local` switches **both** brains at once.
+
+<p align="right"><a href="#top">↑ Back to top</a></p>
 
 ## 🖥 Local AI: qwen3:14b on an RTX 3060
 
@@ -179,7 +204,12 @@ The service is **on demand**: it never starts at boot. `ollama-up` and `ollama-d
 
 > **GPU sizing note:** The reference is RTX 3060 12 GB + `qwen3:14b` + 16k context (`OLLAMA_CONTEXT_LENGTH`). With less VRAM, use a smaller model or shorter context (edit `OLLAMA_CONTEXT_LENGTH` / the model tag). With no NVIDIA GPU, Ollama runs on CPU (much slower) — the cloud combos still work.
 
+<p align="right"><a href="#top">↑ Back to top</a></p>
+
 ## ⌨️ My workstation
+
+<details>
+<summary><b>See hardware and versions</b></summary>
 
 This is the author's reference machine; any supported distro (Arch, Debian/Ubuntu, Fedora) or WSL2 works.
 
@@ -210,6 +240,10 @@ This is the author's reference machine; any supported distro (Arch, Debian/Ubunt
 
 </details>
 
+</details>
+
+<p align="right"><a href="#top">↑ Back to top</a></p>
+
 ## 🛡 Design decisions
 
 - **Secrets never touch git.** Keys are read from environment variables (`{env:OMNIROUTE_API_KEY}`). Provider keys, databases and memory are backed up in an [`age`](https://github.com/FiloSottile/age)-encrypted archive.
@@ -221,6 +255,9 @@ This is the author's reference machine; any supported distro (Arch, Debian/Ubunt
 - **Lessons are written down.** Every problem solved along the way is in [`docs/LESSONS.md`](docs/LESSONS.en.md).
 
 ## 📁 Repository layout
+
+<details>
+<summary><b>See file tree</b></summary>
 
 ```
 agentic-dev-setup/
@@ -247,6 +284,10 @@ agentic-dev-setup/
 ├── system/etc/systemd/system/ollama.service.d/override.conf
 └── tools/                         ← banner generator
 ```
+
+</details>
+
+<p align="right"><a href="#top">↑ Back to top</a></p>
 
 ## 🌐 Examples
 
