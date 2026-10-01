@@ -48,6 +48,51 @@ Está pensado para **estudiantes universitarios** que quieren construir **proyec
 - 🔐 **Los secretos nunca tocan git** — variables de entorno más respaldo encriptado con `age`; la puerta de enlace solo escucha en localhost.
 - ♻️ **Reconstruible desde cero** — scripts de arranque, restauración y parches idempotentes devuelven una máquina fresca a este estado exacto.
 
+## 📸 En acción
+
+Capturas reales de mi estación de trabajo, no mockups.
+
+<div align="center">
+
+<img src="assets/screenshots/01-agent-workspace.webp" alt="Espacio de trabajo de agentes: Claude Code a la izquierda redactando un brief y delegando a OpenCode, a la derecha el agente elvinlabCode ejecutando la tarea" width="100%">
+
+<sub><b>Un cerebro, muchas manos.</b> Claude Code (izquierda) razona, escribe el brief y delega a un agente de OpenCode (derecha) que implementa con TDD.</sub>
+
+<br><br>
+
+<img src="assets/screenshots/06-parallel-agents.webp" alt="Tres agentes de OpenCode trabajando en paralelo, cada uno en su propio worktree y rama, coordinados desde Claude Code" width="100%">
+
+<sub><b>Agentes en paralelo.</b> Tres tareas Tier 2 a la vez, cada una en su worktree y su rama; Claude revisa cada diff contra <code>git</code> antes de integrar.</sub>
+
+<br><br>
+
+<img src="assets/screenshots/02-shell-details.webp" alt="Detalle de un comando opencode run en ejecución, delegado con el modelo elvinlabCode" width="100%">
+
+<sub><b>Delegación observable.</b> Cada <code>opencode run</code> delegado se ve en vivo: estado, tiempo, comando y salida.</sub>
+
+<br><br>
+
+<img src="assets/screenshots/03-omniroute-dashboard.webp" alt="Panel de OmniRoute con la topología de proveedores: NVIDIA NIM, Mistral, Cerebras, Gemini, Groq y Ollama" width="100%">
+
+<sub><b>OmniRoute.</b> Una sola puerta de enlace local con cinco proveedores en la nube más Ollama, y las solicitudes recientes en tiempo real.</sub>
+
+<br><br>
+
+<table>
+  <tr>
+    <td width="65%" valign="top">
+      <img src="assets/screenshots/04-routing-combos.webp" alt="Los tres combos de enrutamiento: elvinlabCode, elvinlabFast y elvinlabLocal" width="100%">
+      <br><sub><b>Tres combos.</b> <code>elvinlabCode</code>, <code>elvinlabFast</code> y <code>elvinlabLocal</code>, con tasa de éxito y latencia.</sub>
+    </td>
+    <td width="35%" valign="top">
+      <img src="assets/screenshots/05-model-health.webp" alt="Resultados de la prueba de salud de un combo: cada destino responde OK, desde NVIDIA hasta qwen3:14b local" width="100%">
+      <br><sub><b>Salud de modelos.</b> Cada destino se prueba por separado; el último escalón es <code>qwen3:14b</code> local.</sub>
+    </td>
+  </tr>
+</table>
+
+</div>
+
 ## 🏗 Cómo encaja todo
 
 ```mermaid

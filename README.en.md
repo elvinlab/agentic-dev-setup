@@ -48,6 +48,51 @@ Built for **university students** who want to ship **personal projects** with AI
 - 🔐 **Secrets never touch git** — environment variables plus an `age`-encrypted backup; the gateway only listens on localhost.
 - ♻️ **Rebuildable from scratch** — bootstrap, restore and idempotent patch scripts bring a fresh machine back to this exact state.
 
+## 📸 In action
+
+Real screenshots from my workstation, not mockups.
+
+<div align="center">
+
+<img src="assets/screenshots/01-agent-workspace.webp" alt="Agent workspace: Claude Code on the left writing a brief and delegating to OpenCode, the elvinlabCode agent running the task on the right" width="100%">
+
+<sub><b>One brain, many hands.</b> Claude Code (left) reasons, writes the brief and delegates to an OpenCode agent (right) that implements it with TDD.</sub>
+
+<br><br>
+
+<img src="assets/screenshots/06-parallel-agents.webp" alt="Three OpenCode agents working in parallel, each in its own worktree and branch, coordinated from Claude Code" width="100%">
+
+<sub><b>Parallel agents.</b> Three Tier 2 tasks at once, each in its own worktree and branch; Claude checks every diff against <code>git</code> before integrating.</sub>
+
+<br><br>
+
+<img src="assets/screenshots/02-shell-details.webp" alt="Detail of a running opencode run command, delegated with the elvinlabCode model" width="100%">
+
+<sub><b>Observable delegation.</b> Every delegated <code>opencode run</code> is visible live: status, runtime, command and output.</sub>
+
+<br><br>
+
+<img src="assets/screenshots/03-omniroute-dashboard.webp" alt="OmniRoute dashboard with the provider topology: NVIDIA NIM, Mistral, Cerebras, Gemini, Groq and Ollama" width="100%">
+
+<sub><b>OmniRoute.</b> One local gateway with five cloud providers plus Ollama, and recent requests in real time.</sub>
+
+<br><br>
+
+<table>
+  <tr>
+    <td width="65%" valign="top">
+      <img src="assets/screenshots/04-routing-combos.webp" alt="The three routing combos: elvinlabCode, elvinlabFast and elvinlabLocal" width="100%">
+      <br><sub><b>Three combos.</b> <code>elvinlabCode</code>, <code>elvinlabFast</code> and <code>elvinlabLocal</code>, with success rate and latency.</sub>
+    </td>
+    <td width="35%" valign="top">
+      <img src="assets/screenshots/05-model-health.webp" alt="Combo health test results: every target answers OK, from NVIDIA down to local qwen3:14b" width="100%">
+      <br><sub><b>Model health.</b> Each target is tested independently; the last fallback is local <code>qwen3:14b</code>.</sub>
+    </td>
+  </tr>
+</table>
+
+</div>
+
 ## 🏗 How it fits together
 
 ```mermaid
