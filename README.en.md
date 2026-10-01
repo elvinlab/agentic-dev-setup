@@ -201,6 +201,14 @@ agentic-dev-setup/
 └── tools/                         ← banner generator
 ```
 
+## 🌐 Examples
+
+Real projects built with this setup. More will be added over time.
+
+| Project | What it is |
+|---------|------------|
+| [elvinlab.dev](https://elvinlab.dev) | My personal blog and portfolio |
+
 ## 📚 Documentation
 
 | I want to… | Go to |
