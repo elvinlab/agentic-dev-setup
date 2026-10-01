@@ -35,6 +35,8 @@ Built for **university students** who want to ship **personal projects** with AI
 > [!NOTE]
 > **Model transparency:** this repository is developed and tested with **Claude Sonnet at medium effort** — not the largest model, and not maximum reasoning. That is deliberate: it shows a mid-tier model, well orchestrated, is enough for real projects without overspending.
 
+👉 **Want to see what you can build with this?** Check out the [projects made with this development environment](#-examples).
+
 ## ✨ Highlights
 
 - 💵 **$20/month, total** — one Claude Pro subscription; every other model and tool is free-tier or open-source.

@@ -29,11 +29,13 @@ El resultado: juicio a nivel frontera donde importa, **$0 en el trabajo delegado
 Está pensado para **estudiantes universitarios** que quieren construir **proyectos personales** con agentes de IA, pero **no pueden (o no quieren) pagar una suscripción carísima**.
 
 - 💸 **Presupuesto de estudiante** — una sola suscripción de US$20/mes; el trabajo delegado corre en niveles gratuitos y en tu propia GPU.
-- 🧭 **Aprendés la arquitectura, no solo la herramienta** — ves cómo se reparte el trabajo entre un modelo caro y otros baratos.
+- 🧭 **Se aprende la arquitectura, no solo la herramienta** — ves cómo se reparte el trabajo entre un modelo caro y otros baratos.
 - 🔧 **Reproducible en tu máquina** — scripts idempotentes; no hace falta un equipo de gama alta (una GPU de 12 GB alcanza para la IA local).
 
 > [!NOTE]
 > **Transparencia sobre el modelo:** este repositorio se desarrolla y se prueba con **Claude Sonnet a esfuerzo medio** (*medium effort*), no con el modelo más grande ni con el máximo razonamiento. Es a propósito: demuestra que un modelo intermedio, bien orquestado, rinde lo suficiente para proyectos reales sin gastar de más.
+
+👉 **¿Quiere ver qué se puede construir con esto?** Vea los [proyectos hechos con este entorno de desarrollo](#-ejemplos).
 
 ## ✨ Destacados
 
