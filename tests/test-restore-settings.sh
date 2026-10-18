@@ -8,7 +8,10 @@ trap 'rm -rf "$TMP"' EXIT
 export HOME="$TMP/home"
 S="$HOME/.claude/settings.json"
 fail() { echo "FAIL: $*" >&2; exit 1; }
-fresh() { mkdir -p "$HOME/.claude"; echo '{"hooks":{"SessionStart":[],"PreToolUse":[]}}' > "$S"; }
+fresh() {
+  mkdir -p "$HOME/.claude"
+  echo '{"hooks":{"SessionStart":[],"PreToolUse":[],"UserPromptSubmit":[{"hooks":[{"type":"command","command":"codegraph prompt-hook"}]},{"hooks":[{"type":"command","command":"echo keep-me"}]}]}}' > "$S"
+}
 run() { bash "$REPO/home/.config/agent-routing/restore.sh" >/dev/null 2>&1; }
 
 fresh; run
@@ -29,5 +32,12 @@ fresh; AUTO_COMPACT_WINDOW=180000 run
 
 fresh; AUTO_COMPACT_WINDOW=0 run
 [ "$(jq -r '.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW // "unset"' "$S")" = "unset" ] || fail "window=0 should leave it unset"
+
+fresh; run
+! grep -q 'codegraph prompt-hook' "$S" || fail "codegraph prompt-hook kept by default"
+grep -q 'keep-me' "$S" || fail "other UserPromptSubmit hooks were removed"
+
+fresh; KEEP_CODEGRAPH_HOOK=1 run
+grep -q 'codegraph prompt-hook' "$S" || fail "KEEP_CODEGRAPH_HOOK=1 ignored"
 
 echo "restore settings checks passed."

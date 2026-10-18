@@ -19,13 +19,13 @@ Never hardcode or assume model names: the user switches this file at any time (c
 
 When unsure between tiers, pick the higher one. Never delegate work whose spec you cannot state precisely. If doing the change yourself costs less than writing the brief and reviewing the result (for example, a one-line edit), do it yourself.
 
-### Precedence with the ODD delegation triggers
+### When to delegate (moderate policy)
 
-The gentle-ai ODD protocol in this file already has mandatory delegation triggers (mapping at 4+ files, writer at 2+ non-trivial files, preparation, and a long-session backstop). Those decide **when** to delegate for context hygiene. This block decides **which model** handles the delegated work:
+This block overrides the ODD rule that keeps small units inline, for Tier 1-2 work. Every turn re-reads the whole session context, so work done inline costs several expensive turns while a delegated unit costs one or two.
 
-- When an ODD trigger fires, route that delegated unit through the tiers above — trivial/bounded work goes to `TIER1_MODEL`/`TIER2_MODEL` via herdr + OpenCode, not to yourself.
-- The cost heuristic still applies to genuinely trivial edits no trigger forces: a one-liner you understand is cheaper to do yourself than to brief.
-- Complex work (Tier 3) stays with you even when a trigger fires; delegate only its bounded, well-specified sub-parts.
+Delegate to OpenCode when the spec can be stated precisely AND the work would take about 3 or more inline turns (read, edit, test, fix cycles) or roughly 30+ lines of new code, tests, or docs. Read-only mapping that ODD would send to an explorer also goes to OpenCode: brief it as read-only and ask for at most ~2k tokens with `path:line` evidence.
+
+Keep inline: ambiguous requirements, security-sensitive code, cross-module or architectural changes (Tier 3), one-liners and 1-2 turn edits, and anything that needs this conversation's context.
 
 ### Before delegating
 

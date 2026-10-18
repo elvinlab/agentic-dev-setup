@@ -108,6 +108,16 @@ if [ "$WINDOW" != "0" ]; then
   echo "[restore] auto-compact window = $WINDOW"
 fi
 
+# 2f) Drop the codegraph UserPromptSubmit hook: it injects ~16 KB of context on every
+#      prompt, and that text then rides along in the cache for the rest of the session.
+#      The codegraph MCP tool answers the same questions on demand. KEEP_CODEGRAPH_HOOK=1
+#      leaves it in place.
+if [ "${KEEP_CODEGRAPH_HOOK:-0}" != "1" ]; then
+  jq 'if .hooks.UserPromptSubmit then .hooks.UserPromptSubmit |= (map(.hooks |= map(select(.command != "codegraph prompt-hook"))) | map(select((.hooks | length) > 0))) else . end' \
+    "$SETTINGS" > "$SETTINGS.tmp" && mv "$SETTINGS.tmp" "$SETTINGS"
+  echo "[restore] codegraph prompt-hook removed"
+fi
+
 # 3) Caveman skill files (independent of gentle-ai; cannot be regenerated here).
 if [ "${RESTORE_CAVEMAN:-0}" != "1" ]; then
   :

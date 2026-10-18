@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `restore.sh` removes the codegraph `UserPromptSubmit` hook (about 16 KB of context injected on every prompt); `KEEP_CODEGRAPH_HOOK=1` keeps it.
+- Codex delegation block follows the same moderate policy as the Claude one.
 - `restore.sh` no longer re-adds the caveman and RTK hooks by default; opt in with `RESTORE_CAVEMAN=1` / `RESTORE_RTK=1`
 - Claude delegation block: moderate delegation policy that overrides the ODD inline-writer rule for Tier 1-2 (delegate when the spec is precise and the work takes about 3+ inline turns or 30+ lines; read-only mapping goes to OpenCode too) and a cheap review (`git diff --stat`, rerun checks, read only risky hunks)
 
