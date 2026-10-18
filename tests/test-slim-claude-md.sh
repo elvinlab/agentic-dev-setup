@@ -42,8 +42,8 @@ grep -q 'HANDOFF-BODY-LINE' "$D/defect-handoff.md" || fail "handoff body not sav
 ! grep -q 'HANDOFF-BODY-LINE' "$CM" || fail "handoff body still in CLAUDE.md"
 grep -q 'LANGUAGE-BODY-LINE' "$CM" || fail "neighbouring section lost"
 grep -q 'COST-BODY-LINE' "$CM" || fail "following section lost"
-grep -q '~/.claude/deferred/review-contract.md' "$CM" || fail "review stub missing"
-grep -q '~/.claude/deferred/defect-handoff.md' "$CM" || fail "handoff stub missing"
+grep -q 'claude/deferred/review-contract.md' "$CM" || fail "review stub missing"
+grep -q 'claude/deferred/defect-handoff.md' "$CM" || fail "handoff stub missing"
 
 before="$(sha256sum "$CM" "$D"/*.md)"
 bash "$REPO/scripts/slim-claude-md.sh" >/dev/null

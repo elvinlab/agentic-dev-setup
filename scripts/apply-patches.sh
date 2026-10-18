@@ -15,7 +15,7 @@ bash "$REPO/scripts/install-codex-profiles.sh"
 command -v jq >/dev/null || { echo "Missing jq: sudo pacman -S jq"; exit 1; }
 
 # Keep only the 5 most recent timestamped backups of a file.
-prune_backups() { ls -1t "$1".bak.* 2>/dev/null | tail -n +6 | xargs -r rm -f; }
+prune_backups() { printf '%s\n' "$1".bak.* | sort -r | tail -n +6 | xargs -r rm -f; }
 
 # 1) OmniRoute provider in OpenCode (deep merge, does not overwrite Gentle AI's config)
 if [ -f "$OC" ]; then

@@ -14,7 +14,7 @@ q() { jq -r "$1" <<<"$OUT"; }
 [ "$(q '.permission.doom_loop')" = "deny" ] || fail "doom_loop is not deny"
 for a in build gentle-ai-worker gentle-orchestrator; do
   s="$(q ".agent[\"$a\"].steps")"
-  [[ "$s" =~ ^[0-9]+$ ]] && [ "$s" -ge 50 ] && [ "$s" -le 400 ] || fail "$a steps out of range: $s"
+  if ! { [[ "$s" =~ ^[0-9]+$ ]] && [ "$s" -ge 50 ] && [ "$s" -le 400 ]; }; then fail "$a steps out of range: $s"; fi
 done
 [ "$(q '.permission.edit')" = "allow" ] || fail "existing permission lost"
 [ "$(q '.permission.bash["git push *"]')" = "ask" ] || fail "existing bash rule lost"

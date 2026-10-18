@@ -31,16 +31,18 @@ defer_section() {
     tail -n "+$e" "$CM"
   } > "$CM.slim.tmp"
   mv "$CM.slim.tmp" "$CM"
-  ls -1t "$CM".bak.* 2>/dev/null | tail -n +6 | xargs -r rm -f
+  printf '%s\n' "$CM".bak.* | sort -r | tail -n +6 | xargs -r rm -f
   echo "✔ $name: moved $((e - s)) lines to $DEF/$name.md"
 }
 
+# shellcheck disable=SC2016  # the stub text is literal markdown with backticks
 defer_section review-contract \
   '^#### Review Execution Contract$' '^#### Cost and Context Balance$' \
 '#### Review Execution Contract (deferred)
 
 Native review runs only when `gentle-ai review assess` returns `review_due: true` or the user explicitly asks for a review. Before ANY review step (START, STATUS, capture, correction, acknowledgement, or relaying a consent envelope), read `~/.claude/deferred/review-contract.md` in full and follow it exactly. Never run review commands from memory.'
 
+# shellcheck disable=SC2016
 defer_section defect-handoff \
   '^#### Gentle AI Provider Defect Handoff \(MANDATORY\)$' '^### Language Domain Contract$' \
 '#### Gentle AI Provider Defect Handoff (deferred)
