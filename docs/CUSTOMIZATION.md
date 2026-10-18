@@ -89,6 +89,8 @@ Ajusta estos valores según tu VRAM y el modelo. También puedes ejecutar Ollama
 Los siguientes **comentarios marcadores son funcionales**: los scripts los buscan para hacer que las operaciones sean idempotentes:
 
 - `<!-- elvinlab:delegation -->` — marca el bloque de delegación que `scripts/apply-patches.sh` inserta en `~/.claude/CLAUDE.md`.
+
+`scripts/slim-claude-md.sh` (lo ejecuta `apply-patches.sh`) mueve el contrato de review y el handoff de defectos de Gentle AI a `~/.claude/deferred/` y deja en `CLAUDE.md` un stub de lectura obligatoria. Ahorra ~24 KB (~6k tokens) en cada sesión y subagente. `gentle-ai sync` restaura el texto completo; vuelve a ejecutar `apply-patches.sh` después de cada sync.
 - `<!-- elvinlab:delegation-codex -->` — marca el bloque de delegación que `scripts/install-codex-profiles.sh` inserta en `~/.codex/AGENTS.md`.
 
 **No cambies estos marcadores** a menos que también actualices los scripts correspondientes (`apply-patches.sh` e `install-codex-profiles.sh`). Son lo único que permite a los scripts encontrar el lugar correcto sin sobrescribir el resto de tu configuración.

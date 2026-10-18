@@ -33,6 +33,11 @@ tail -n1 "$CM" | grep -q . && printf '\n' >> "$CM"
 cat "$REPO/home/.claude/delegation-block.md" >> "$CM"
 echo "✔ CLAUDE.md: delegation block applied ($(grep -c '<!-- elvinlab:delegation -->' "$CM") block)"
 
+# 2b) Slim CLAUDE.md: move the review contract and defect handoff to on-demand
+#     files (loaded every session and subagent otherwise). gentle-ai sync
+#     restores them, so this runs on every apply.
+bash "$REPO/scripts/slim-claude-md.sh"
+
 # 3) Codex peer delegation block in AGENTS.md (outside gentle-ai managed regions)
 if [ -f "$AG" ]; then
   cp "$AG" "$AG.bak.$(date +%Y%m%d%H%M%S)"

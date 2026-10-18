@@ -91,6 +91,8 @@ The following **marker comments are functional** — scripts grep for them to ac
 - `<!-- elvinlab:delegation -->` — marks the delegation block injected into `~/.claude/CLAUDE.md` by `scripts/apply-patches.sh`
 - `<!-- elvinlab:delegation-codex -->` — marks the delegation block injected into `~/.codex/AGENTS.md` by `scripts/install-codex-profiles.sh`
 
+`scripts/slim-claude-md.sh` (run by `apply-patches.sh`) moves Gentle AI's review contract and defect handoff to `~/.claude/deferred/` and leaves a mandatory-read stub in `CLAUDE.md`. It saves ~24 KB (~6k tokens) on every session and subagent. `gentle-ai sync` restores the full text; rerun `apply-patches.sh` after each sync.
+
 **Do not change these markers** unless you also update the corresponding scripts (`apply-patches.sh` and `install-codex-profiles.sh`). They are the only thing that lets the patch scripts find the right place without overwriting your other configuration.
 
 ---
