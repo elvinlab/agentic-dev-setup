@@ -3,7 +3,7 @@
 # gentle-ai, Claude Code, OpenCode or Engram. Exit 1 when something regressed.
 # Honors the same knobs as restore.sh: AUTO_COMPACT_WINDOW (0 = not managed),
 # KEEP_CODEGRAPH_HOOK=1.
-# shellcheck disable=SC2329  # the predicates below are called through check()
+# shellcheck disable=SC2317,SC2329  # the predicates below are called through check()
 set -uo pipefail
 
 CM="$HOME/.claude/CLAUDE.md"
