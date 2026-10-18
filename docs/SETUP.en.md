@@ -109,7 +109,7 @@ the settings without reapplying the other patches:
 bash ~/.config/agent-routing/restore.sh
 ```
 
-Re-applies the Gentleman output style, the caveman ULTRA SessionStart hook, the RTK PreToolUse hook (Bash output compaction), the herdr tier-routing UserPromptSubmit hook (injects the active `TIER1_MODEL`/`TIER2_MODEL` so the routing reminder fires in every chat and repo), and the opencode autonomous permission ceiling (broad-safe: edit/bash/test allowed; push, deploy wrangler/pnpm, gh pr merge/release/auth, rm -rf, ssh/scp/rsync denied) into `~/.claude/settings.json` and `~/.config/opencode/opencode.json`. It is idempotent and **must run after step 4 (Gentle AI)** because it patches `~/.claude/settings.json` (errors if that file is missing).
+Re-applies the Gentleman output style, the auto-compact window (`AUTO_COMPACT_WINDOW`, 250000 tokens by default; `0` leaves it untouched), the herdr tier-routing UserPromptSubmit hook (injects the active `TIER1_MODEL`/`TIER2_MODEL` so the routing reminder fires in every chat and repo), and the opencode autonomous permission ceiling (broad-safe: edit/bash/test allowed; push, deploy wrangler/pnpm, gh pr merge/release/auth, rm -rf, ssh/scp/rsync denied) into `~/.claude/settings.json` and `~/.config/opencode/opencode.json`. It is idempotent and **must run after step 4 (Gentle AI)** because it patches `~/.claude/settings.json` (errors if that file is missing).
 
 > **Why re-apply instead of "set once"?** Gentle AI owns `~/.claude/settings.json` and can overwrite these on a reinstall/update, so they cannot be made immune — they are re-applied. Because `apply-patches.sh` runs `restore.sh`, rerunning `./scripts/apply-patches.sh` after any Gentle AI install/update restores all of them in one step.
 

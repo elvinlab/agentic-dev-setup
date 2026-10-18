@@ -55,8 +55,11 @@ ls -1t "$SETTINGS".bak.* 2>/dev/null | tail -n +6 | xargs -r rm -f
 # 2a) Keep the active output style on Gentleman.
 jq '.outputStyle = "Gentleman"' "$SETTINGS" > "$SETTINGS.tmp" && mv "$SETTINGS.tmp" "$SETTINGS"
 
-# 2b) Ensure the caveman ULTRA SessionStart hook is present (add only if missing).
-if grep -q "$MARKER" "$SETTINGS"; then
+# 2b) Caveman ULTRA SessionStart hook: opt-in (RESTORE_CAVEMAN=1); gentle-ai handles
+#      output compression by default. Added only if missing.
+if [ "${RESTORE_CAVEMAN:-0}" != "1" ]; then
+  echo "[restore] caveman hook skipped (set RESTORE_CAVEMAN=1 to enable)"
+elif grep -q "$MARKER" "$SETTINGS"; then
   echo "[restore] caveman hook present"
 else
   PAYLOAD=$(jq -nc --arg ctx "$CAVEMAN_TEXT" \
@@ -68,8 +71,11 @@ else
   echo "[restore] caveman hook re-added"
 fi
 
-# 2c) Ensure the RTK PreToolUse hook is present (compacts Bash output; add only if missing).
-if grep -q 'rtk hook claude' "$SETTINGS"; then
+# 2c) RTK PreToolUse hook (compacts Bash output): opt-in (RESTORE_RTK=1), needs the
+#      rtk binary on PATH. Added only if missing.
+if [ "${RESTORE_RTK:-0}" != "1" ]; then
+  echo "[restore] rtk hook skipped (set RESTORE_RTK=1 to enable)"
+elif grep -q 'rtk hook claude' "$SETTINGS"; then
   echo "[restore] rtk hook present"
 else
   jq '.hooks.PreToolUse += [ { "hooks":[ {"command":"rtk hook claude","type":"command"} ], "matcher":"Bash" } ]' \
@@ -92,8 +98,20 @@ else
   echo "[restore] routing hook re-added"
 fi
 
+# 2e) Compact the conversation at AUTO_COMPACT_WINDOW tokens (default 250000) instead
+#      of letting context grow toward the model maximum: cache reads on every turn
+#      scale with context length. AUTO_COMPACT_WINDOW=0 leaves the setting untouched.
+WINDOW="${AUTO_COMPACT_WINDOW:-250000}"
+if [ "$WINDOW" != "0" ]; then
+  jq --arg w "$WINDOW" '.env.CLAUDE_CODE_AUTO_COMPACT_WINDOW = $w' \
+    "$SETTINGS" > "$SETTINGS.tmp" && mv "$SETTINGS.tmp" "$SETTINGS"
+  echo "[restore] auto-compact window = $WINDOW"
+fi
+
 # 3) Caveman skill files (independent of gentle-ai; cannot be regenerated here).
-if [ -f "$CAVEMAN_SKILL" ]; then
+if [ "${RESTORE_CAVEMAN:-0}" != "1" ]; then
+  :
+elif [ -f "$CAVEMAN_SKILL" ]; then
   echo "[restore] caveman skill present"
 else
   echo "[restore] WARN: caveman skill missing at $CAVEMAN_SKILL (reinstall the caveman skill)" >&2

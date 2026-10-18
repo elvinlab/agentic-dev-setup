@@ -50,8 +50,8 @@ else
 fi
 
 # 4) Re-apply the orchestrator settings gentle-ai can clobber (idempotent):
-#    Gentleman style, caveman SessionStart hook, RTK PreToolUse hook, the herdr
-#    tier-routing UserPromptSubmit hook, and the opencode permission ceiling.
+#    Gentleman style, auto-compact window, the herdr tier-routing UserPromptSubmit
+#    hook, and the opencode permission ceiling (caveman and RTK are opt-in).
 #    Guarded so a missing settings.json only warns instead of failing the patch.
 # Use the repo copy so a freshly pulled version runs, not a possibly stale
 # installed one.

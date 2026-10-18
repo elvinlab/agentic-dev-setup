@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `scripts/slim-claude-md.sh`: moves the review contract and defect handoff out of `~/.claude/CLAUDE.md` into on-demand files (about 26% smaller), applied by `apply-patches.sh`
+- `restore.sh` sets `CLAUDE_CODE_AUTO_COMPACT_WINDOW` (default 250000, `AUTO_COMPACT_WINDOW` overrides, `0` skips) to cap per-turn cache reads
+
+### Changed
+
+- `restore.sh` no longer re-adds the caveman and RTK hooks by default; opt in with `RESTORE_CAVEMAN=1` / `RESTORE_RTK=1`
 
 ## [1.0.0] - 2026-09-30
 
