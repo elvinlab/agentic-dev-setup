@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `scripts/slim-claude-md.sh`: moves the review contract and defect handoff out of `~/.claude/CLAUDE.md` into on-demand files (about 26% smaller), applied by `apply-patches.sh`
 - `restore.sh` sets `CLAUDE_CODE_AUTO_COMPACT_WINDOW` (default 250000, `AUTO_COMPACT_WINDOW` overrides, `0` skips) to cap per-turn cache reads
 - `home/.bashrc.d/gentle-ai.sh`: `gentle-ai` shell wrapper that reruns `apply-patches.sh` after the TUI, `install`, `sync`, `upgrade` and `restore` succeed
+- OpenCode loop guards in `patches/opencode-provider.json`: `permission.doom_loop = deny` and `steps: 200` for `build`, `gentle-ai-worker` and `gentle-orchestrator`
+- Watchdog rule in both delegation blocks: always `--wait --timeout` (max 15 min), read, interrupt and re-brief once on a stall
 
 ### Changed
 

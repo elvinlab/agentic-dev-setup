@@ -8,12 +8,32 @@
         "apiKey": "{env:OMNIROUTE_API_KEY}"
       },
       "models": {
-        "elvinlabCode": { "name": "elvinlabCode" },
-        "elvinlabFast": { "name": "elvinlabFast" },
-        "elvinlabLocal": { "name": "elvinlabLocal" }
+        "elvinlabCode": {
+          "name": "elvinlabCode"
+        },
+        "elvinlabFast": {
+          "name": "elvinlabFast"
+        },
+        "elvinlabLocal": {
+          "name": "elvinlabLocal"
+        }
       }
     }
   },
   "model": "omniroute/elvinlabCode",
-  "small_model": "omniroute/elvinlabFast"
+  "small_model": "omniroute/elvinlabFast",
+  "permission": {
+    "doom_loop": "deny"
+  },
+  "agent": {
+    "build": {
+      "steps": 200
+    },
+    "gentle-ai-worker": {
+      "steps": 200
+    },
+    "gentle-orchestrator": {
+      "steps": 200
+    }
+  }
 }

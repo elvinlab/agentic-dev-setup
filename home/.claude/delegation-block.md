@@ -43,6 +43,11 @@ The agent does not see this conversation, so every brief must be self-contained:
 - If the agent saved incorrect facts to Engram, correct them.
 - Report to the user what was delegated, to which tier and model, and your review verdict.
 
+### Watchdog (never wait unbounded)
+
+- Always delegate with `herdr agent prompt <agent> "<brief>" --wait --timeout <ms>`; use at most 900000 (15 min) for a tier 1-2 task. Never wait without a timeout.
+- On timeout, or when the pane shows the same tool call or error repeating (free models can loop on a no-op edit), read the tail with `herdr agent read <agent> --source recent-unwrapped --lines 40`, interrupt it with `herdr agent send-keys`, and re-brief once with a narrower scope. If it fails again, do the task yourself.
+
 ### Fallback
 
 If herdr or `opencode` is unavailable, or the delegated task stalls, tell the user and continue yourself.
