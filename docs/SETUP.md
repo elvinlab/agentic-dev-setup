@@ -124,6 +124,29 @@ Así se carga `~/.bashrc.d/ai.sh` y tus secretos.
 
 ---
 
+## Después de una actualización (¿sobrevive la configuración?)
+
+Casi todo sobrevive, pero no está garantizado para siempre. Tras actualizar Gentle AI, Claude Code, OpenCode o Engram, ejecuta la revisión de solo lectura:
+
+```bash
+bash scripts/doctor.sh
+```
+
+Informa `✔`/`⚠`/`✘` por elemento y sale con código 1 si algo retrocedió. En ese caso, repara con `bash scripts/apply-patches.sh` (idempotente) y vuelve a ejecutarla.
+
+| Actualización | Qué pasa |
+|---|---|
+| Claude Code | `~/.claude/settings.json` y `CLAUDE.md` son tuyos; no los sobrescribe. |
+| Engram | Nada de aquí toca su configuración (`protocol-mode.json` queda en `slim` para Claude Code). |
+| Gentle AI (TUI, `sync`, `install`, `upgrade`, `restore`) | Reescribe `CLAUDE.md` y puede sobrescribir `settings.json`. El wrapper de shell `gentle-ai` vuelve a aplicar los parches después. |
+
+Lo que todavía puede romperse, y lo que te dice `doctor.sh`:
+
+1. **El wrapper solo actúa en un bash interactivo.** Si llamas a `gentle-ai` desde un script, otro shell u otra herramienta, no se ejecuta. Corre `apply-patches.sh` a mano.
+2. **El slim depende de dos títulos** del `CLAUDE.md` de Gentle AI. Si los renombran, `slim-claude-md.sh` imprime «skipped» y el archivo vuelve a crecer en silencio hasta ~94 KB; `doctor.sh` avisa de que faltan los stubs.
+3. **La ventana de compactación usa `CLAUDE_CODE_AUTO_COMPACT_WINDOW`**, verificada en Claude Code 2.1.303. Una versión futura podría renombrarla e ignorarla en silencio.
+4. **Las guardas de OpenCode** (`permission.doom_loop`, `steps`) están verificadas en OpenCode 2.0.32; si cambian las claves, `doctor.sh` falla en ellas.
+
 ## Verificación
 
 ```bash

@@ -271,6 +271,7 @@ agentic-dev-setup/
 │   ├── backup.sh                  ← respaldo encriptado de secretos y datos
 │   ├── restore-data.sh            ← restaura el respaldo encriptado
 │   ├── apply-patches.sh           ← adiciones personalizadas sobre Gentle AI
+│   ├── doctor.sh                  ← revisión de solo lectura: ¿sobrevivieron los parches a una actualización?
 │   └── install-codex-profiles.sh  ← instala perfiles Codex + lanzadores
 ├── home/                          ← archivos que van en $HOME
 │   ├── .bashrc.d/ai.sh            ← alias, agent-profile, carga de secretos

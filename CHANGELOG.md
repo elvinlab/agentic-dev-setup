@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `scripts/doctor.sh`: read-only check that the patches survived an update (exit 1 on regression), documented in `docs/SETUP.md` and `docs/SETUP.en.md`.
 - `scripts/slim-claude-md.sh`: moves the review contract and defect handoff out of `~/.claude/CLAUDE.md` into on-demand files (about 26% smaller), applied by `apply-patches.sh`
 - `restore.sh` sets `CLAUDE_CODE_AUTO_COMPACT_WINDOW` (default 250000, `AUTO_COMPACT_WINDOW` overrides, `0` skips) to cap per-turn cache reads
 - `home/.bashrc.d/gentle-ai.sh`: `gentle-ai` shell wrapper that reruns `apply-patches.sh` after the TUI, `install`, `sync`, `upgrade` and `restore` succeed
