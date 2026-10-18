@@ -3,6 +3,14 @@
 
 You are pre-authorized to use herdr to delegate work to `opencode` agents without the user asking each time. Goal: spend your capacity only where it adds value and route the rest to cheaper models.
 
+**Precedence.** This block overrides the ODD Writer trigger and its rule that units of about 100 changed lines or less run inline, for Tier 1-2 work. Every Sonnet turn re-reads the whole session context, so a task done inline costs several expensive turns while a delegated one costs one or two.
+
+### When to delegate (moderate policy)
+
+Delegate to OpenCode when the spec can be stated precisely AND the work would take about 3 or more inline turns (read, edit, test, fix cycles) or roughly 30+ lines of new code, tests, or docs. Read-only mapping that ODD would send to an explorer also goes to OpenCode: brief it as read-only and ask for at most ~2k tokens with `path:line` evidence.
+
+Keep inline: ambiguous requirements, security-sensitive code, cross-module or architectural changes, one-liners and 1-2 turn edits, and anything that needs this conversation's context.
+
 ### Model routing (dynamic)
 
 Before every delegation, read `~/.config/agent-routing/active.env`. It defines `TIER1_MODEL` and `TIER2_MODEL`. Launch OpenCode with the resolved value: `opencode -m <model>`.
@@ -38,7 +46,7 @@ The agent does not see this conversation, so every brief must be self-contained:
 
 ### After delegating
 
-- Review the full diff yourself: verify every claim against the code and rerun the verification commands.
+- Review cheaply: read `git diff --stat`, rerun the verification commands yourself, and read only the hunks that are risky or that the tests do not cover. Read the full diff only for security-sensitive work or when no test covers the change.
 - Fix small issues directly. Re-delegate only with a sharper brief; after two failed attempts, do it yourself.
 - If the agent saved incorrect facts to Engram, correct them.
 - Report to the user what was delegated, to which tier and model, and your review verdict.
