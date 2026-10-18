@@ -84,6 +84,7 @@ for example in "$REPO/home/.config/agent-routing/"*.env.example; do
 done
 [ -L "$HOME/.config/agent-routing/active.env" ] || ln -sf cloud.env "$HOME/.config/agent-routing/active.env"
 cp "$REPO/home/.bashrc.d/ai.sh" "$HOME/.bashrc.d/ai.sh"
+cp "$REPO/home/.bashrc.d/gentle-ai.sh" "$HOME/.bashrc.d/gentle-ai.sh"
 install -m 755 "$REPO/home/.config/agent-routing/restore.sh" "$HOME/.config/agent-routing/restore.sh"
 echo "✔ restore.sh installed (run it AFTER Gentle AI: bash ~/.config/agent-routing/restore.sh)"
 
